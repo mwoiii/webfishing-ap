@@ -1,0 +1,97 @@
+from dataclasses import dataclass
+from Options import Toggle, DefaultOnToggle, DeathLink, Range, Choice, PerGameCommonOptions  # , OptionGroup
+
+
+
+class Goal(Choice):
+    """
+    Total Journal Completion: Reach a specific percentage threshold in total journal completion
+    (i.e. all fish, all rarities).
+
+    Rank: Reach a specific rank.
+    """
+    display_name = "Goal"
+    option_total_completion = 0
+    option_rank = 1
+    default = 0
+
+
+class TotalCompletion(Range):
+    """The required total journal completion percentage for the Total Completion goal."""
+    display_name = "Required Journal Percentage"
+    range_start = 1
+    range_end = 100
+    default = 70
+
+
+class Rank(Range):
+    """The required rank for the Rank goal."""
+    display_name = "Required Rank"
+    range_start = 2
+    range_end = 50
+    default = 40
+
+
+# class ProgressiveCampTier(Toggle):
+#     """Whether camp tiers need to be received or not."""
+#     display_name = "Progressive Camp Tiers"
+#
+#
+# class LockUpgradesBehindCamp(Toggle):
+#     """Whether all the following receivable upgrades need to have their corresponding camp tier unlocked or not."""
+#     display_name = "Lock Receivable Upgrades Behind Camp Tier"
+#
+#
+# class ProgressiveRodUpgrade(DefaultOnToggle):
+#     """Whether rod upgrades need to be received or not."""
+#     display_name = "Progressive Rod Upgrades"
+#
+#
+# class BaitUpgrades(Choice):
+#     """
+#     Progressive: Bait upgrades are received in the standard ascending order.
+#
+#     Individual: Bait upgrades are received separate of each other.
+#
+#     Standard: Bait upgrades are not used in the Archipelago item pool.
+#
+#     """
+#     display_name = "Bait Upgrades"
+#     option_progressive = 0
+#     option_individual = 1
+#     option_standard = 2
+#     default = 1
+#
+#
+# class ProgressiveFishingBuddyUpgrades(DefaultOnToggle):
+#     """Whether the fishing buddy upgrades need to be received or not."""
+#     display_name = "Progressive Fishing Buddy Upgrades"
+#
+#
+# class RequireProgressivePurchase(Toggle):
+#     """Whether receivable progressive upgrades require purchasing after being unlocked or not."""
+#     display_name = "Require Progressive Upgrade Purchase"
+
+
+#  webfishing_option_groups = [
+#     OptionGroup("Total Journal Completion Goal Options", [
+#         TotalCompletion,
+#     ]),
+#     OptionGroup("Rank Goal Options", [
+#         Rank,
+#     ]),
+# ]
+
+
+@dataclass
+class WebfishingOptions(PerGameCommonOptions):
+    goal: Goal
+    total_completion: TotalCompletion
+    rank: Rank
+    # progressive_camp_tier = ProgressiveCampTier
+    # lock_upgrades_behind_camp = LockUpgradesBehindCamp
+    # progressive_rod_upgrade = ProgressiveRodUpgrade
+    # bait_upgrades = BaitUpgrades
+    # progressive_fishing_buddy_upgrades = ProgressiveFishingBuddyUpgrades
+    # require_purchase_progressive = RequireProgressivePurchase
+    death_link: DeathLink

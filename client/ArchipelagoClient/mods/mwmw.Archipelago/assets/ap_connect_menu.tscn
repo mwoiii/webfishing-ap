@@ -1,0 +1,206 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://mods/mwmw.Archipelago/assets/ap_connect_menu.gd" type="Script" id=1]
+[ext_resource path="res://mods/mwmw.Archipelago/assets/resources/panel_med.tres" type="StyleBox" id=2]
+
+[node name="ap_connect_menu" type="Control"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.0627451, 0.109804, 0.192157, 0.431373 )
+
+[node name="Panel" type="Panel" parent="."]
+anchor_left = 0.2
+anchor_top = 0.34
+anchor_right = 0.8
+anchor_bottom = 0.66
+margin_left = 0.199997
+margin_right = 1.79999
+margin_bottom = 81.0
+
+[node name="close" type="Button" parent="Panel"]
+anchor_left = 0.974826
+anchor_top = -0.0360082
+anchor_right = 1.01653
+anchor_bottom = 0.085
+margin_left = -9.4928
+margin_top = -0.169761
+margin_right = -0.182495
+margin_bottom = -2.205
+text = "X"
+
+[node name="Label" type="Label" parent="Panel"]
+anchor_left = 0.014
+anchor_top = 0.0337449
+anchor_right = 1.0
+anchor_bottom = 0.121193
+margin_top = 3.6502
+margin_right = -0.000244141
+margin_bottom = 7.84772
+text = "Connect to Archipelago"
+
+[node name="sep" type="TextureRect" parent="Panel"]
+anchor_top = 0.0380659
+anchor_right = 1.0
+anchor_bottom = 0.12037
+margin_top = 3.47736
+margin_bottom = 7.42798
+rect_min_size = Vector2( 0, 32 )
+size_flags_horizontal = 3
+expand = true
+stretch_mode = 4
+
+[node name="Panel" type="Panel" parent="Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 24.0
+margin_top = 64.0
+margin_right = -24.0
+margin_bottom = -24.0
+custom_styles/panel = ExtResource( 2 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 16.0
+margin_top = 16.0
+margin_right = -16.0
+margin_bottom = -16.0
+custom_constants/separation = 12
+
+[node name="slot_name" type="HBoxContainer" parent="Panel/Panel/VBoxContainer"]
+margin_right = 536.0
+margin_bottom = 24.0
+
+[node name="Label" type="Label" parent="Panel/Panel/VBoxContainer/slot_name"]
+margin_top = 5.0
+margin_right = 128.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 4.0
+text = "Slot Name:"
+valign = 1
+
+[node name="TooltipNode" type="Control" parent="Panel/Panel/VBoxContainer/slot_name/Label"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="slotname" type="LineEdit" parent="Panel/Panel/VBoxContainer/slot_name"]
+unique_name_in_owner = true
+margin_left = 132.0
+margin_right = 536.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 12.5
+max_length = 40
+placeholder_text = "[slot name]"
+
+[node name="server_password" type="HBoxContainer" parent="Panel/Panel/VBoxContainer"]
+margin_top = 36.0
+margin_right = 536.0
+margin_bottom = 60.0
+
+[node name="Label" type="Label" parent="Panel/Panel/VBoxContainer/server_password"]
+margin_top = 5.0
+margin_right = 128.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 4.0
+text = "Server Password:"
+valign = 1
+
+[node name="TooltipNode" type="Control" parent="Panel/Panel/VBoxContainer/server_password/Label"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="serverpassword" type="LineEdit" parent="Panel/Panel/VBoxContainer/server_password"]
+margin_left = 132.0
+margin_right = 536.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 12.5
+max_length = 40
+placeholder_text = "[server password]"
+
+[node name="server_url" type="HBoxContainer" parent="Panel/Panel/VBoxContainer"]
+margin_top = 72.0
+margin_right = 536.0
+margin_bottom = 96.0
+
+[node name="Label" type="Label" parent="Panel/Panel/VBoxContainer/server_url"]
+margin_top = 5.0
+margin_right = 128.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 4.0
+text = "Server URL:"
+valign = 1
+
+[node name="TooltipNode" type="Control" parent="Panel/Panel/VBoxContainer/server_url/Label"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="serverurl" type="LineEdit" parent="Panel/Panel/VBoxContainer/server_url"]
+margin_left = 132.0
+margin_right = 536.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 12.5
+text = "archipelago.gg"
+max_length = 40
+placeholder_text = "[server url]"
+
+[node name="server_port" type="HBoxContainer" parent="Panel/Panel/VBoxContainer"]
+margin_top = 108.0
+margin_right = 536.0
+margin_bottom = 132.0
+
+[node name="Label" type="Label" parent="Panel/Panel/VBoxContainer/server_port"]
+margin_top = 5.0
+margin_right = 128.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 4.0
+text = "Server Port:"
+valign = 1
+
+[node name="TooltipNode" type="Control" parent="Panel/Panel/VBoxContainer/server_port/Label"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="serverport" type="LineEdit" parent="Panel/Panel/VBoxContainer/server_port"]
+margin_left = 132.0
+margin_right = 536.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 12.5
+max_length = 40
+placeholder_text = "[server port]"
+
+[node name="connection_status" type="Label" parent="Panel/Panel/VBoxContainer"]
+margin_top = 144.0
+margin_right = 536.0
+margin_bottom = 158.0
+align = 1
+
+[node name="connect" type="Button" parent="Panel/Panel"]
+anchor_left = 0.818384
+anchor_top = 0.943198
+anchor_right = 1.03308
+anchor_bottom = 1.16721
+margin_left = -0.495972
+margin_top = -0.0216827
+margin_right = -0.52002
+margin_bottom = -0.0495911
+text = "Connect"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[connection signal="pressed" from="Panel/close" to="." method="_on_close_pressed"]
+[connection signal="pressed" from="Panel/Panel/connect" to="." method="_on_connect_pressed"]

@@ -1,0 +1,11 @@
+{
+    "Id": "mwmw.Archipelago",
+    "AssemblyPath": "mwmw.Archipelago.dll",
+    "PackPath": "mwmw.Archipelago.pck",
+    "Metadata": {
+        "Name": "Archipelago",
+        "Author": "Miyowi",
+        "Version": "0.0.1",
+        "Description": "WEBFISHING Archipelago!!!!"
+    }
+}
