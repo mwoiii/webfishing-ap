@@ -27,6 +27,6 @@ The client will try to send a notification if you lose connection - however you 
 For world generation, go to the [releases](https://github.com/mwoiii/webfishing-ap/releases) page, download the ```apworld``` and ```YAML``` files, and place them in your ```custom_worlds``` and ```Players``` respectively (in your Archipelago installation folder!). From here, you can configure the YAML to your liking!
 
 For the client, you can either:
-- Install [r2modman](https://thunderstore.io/package/ebkr/r2modman/), and download the Archipelago client from Thunderstore through it. This will automatically install all dependencies. (Recommended)
+- Install [r2modman](https://thunderstore.io/package/ebkr/r2modman/), and download the [Archipelago client](https://thunderstore.io/c/webfishing/p/mwmw/Archipelago/) from Thunderstore through it. This will automatically install all dependencies. (Recommended)
 
 - Install [GDWeave](https://github.com/NotNite/GDWeave) manually, then download ```mwmw.Archipelago.zip``` from the [releases](https://github.com/mwoiii/webfishing-ap/releases) page and extract the folder into the GDWeave mods folder
