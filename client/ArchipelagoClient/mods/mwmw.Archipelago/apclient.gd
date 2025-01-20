@@ -28,6 +28,7 @@ signal _datapackage_received(datapackage)
 signal _retrieved_data(data)
 
 var TimeoutTimer
+var secure = true
 var _socket := WebSocketClient.new()
 var _url
 var _port
@@ -51,16 +52,9 @@ func connect_to_server(url, port, slot_name, password, game):
 	_password = password
 	_game = game
 	
-	TimeoutTimer.start()
-	var websocket_url = "ws://" + url + ":" + port
-	if _socket.connect_to_url(websocket_url) != OK:
-		out("Connection failed!")
-		_set_status("Connection failed!")
-		_socket.disconnect_from_host()
-		set_process(false)
-	else:
-		set_process(true)
-		_socket.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
+	# try secure first
+	var websocket_url = "wss://" + url + ":" + port
+	_connect(websocket_url)
 
 
 func disconnect_from_server():
@@ -103,6 +97,18 @@ func send_victory():
 	_send_packet('[{"cmd": "StatusUpdate", "status": 30}]')
 
 
+func _connect(websocket_url):
+	TimeoutTimer.start()
+	if _socket.connect_to_url(websocket_url) != OK:
+		out("Connection failed!")
+		_set_status("Connection failed!")
+		_socket.disconnect_from_host()
+		set_process(false)
+	else:
+		set_process(true)
+		_socket.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
+
+
 func _ready():
 	set_process(false)
 	
@@ -112,6 +118,7 @@ func _ready():
 	
 	TimeoutTimer.connect("timeout", self, "_on_timeout")
 	_socket.connect("data_received", self, "_on_data_received")
+	_socket.connect("connection_error", self, "_on_connection_error")
 	_socket.connect("connection_closed", self, "_on_connection_closed")
 	
 	_create_data_files()
@@ -124,8 +131,24 @@ func _on_timeout():
 	_socket.disconnect_from_host()
 
 
+func _on_connection_error():
+	# try unsecure
+	if secure:
+		secure = false
+		var websocket_url = "ws://" + _url + ":" + _port
+		_connect(websocket_url)
+	else:
+		secure = true
+		_set_status("Connection error!")
+		_socket.disconnect_from_host()
+
+
 func _on_connection_closed(clean):
 	if not clean:
+		# attempt to reconnect
+		var websocket_url = "ws://" + _url + ":" + _port
+		_connect(websocket_url)
+		
 		emit_signal("connection_lost")
 		_set_status("Lost connection to server!")
 		_socket.disconnect_from_host()

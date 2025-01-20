@@ -286,6 +286,7 @@ func _on_status_changed(status):
 
 
 func _on_connected(slot_data):
+	PlayerData._send_notification("Connected to Archipelago!")
 	active = true
 	current_goal = slot_data.goal
 	total_completion_goal = slot_data.total_completion
@@ -433,5 +434,5 @@ func _on_received_item(item):
 
 
 func _on_connection_lost():
-	PlayerData._send_notification("Lost connection to Archipelago! Please reconnect!")
+	PlayerData._send_notification("Lost connection to Archipelago! Attempting to reconnect...")
 
