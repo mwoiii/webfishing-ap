@@ -29,7 +29,7 @@ item_table = {
     "Lucky Hook": WebfishingItemData(offset + 8, ItemClassification.useful),
     "Challenge Lure": WebfishingItemData(offset + 9, ItemClassification.useful),
     "Salty Lure": WebfishingItemData(offset + 10, ItemClassification.useful),
-    "Fresh Lure": WebfishingItemData(offset + 1, ItemClassification.useful),
+    "Fresh Lure": WebfishingItemData(offset + 11, ItemClassification.useful),
     "Quick Jig": WebfishingItemData(offset + 12, ItemClassification.useful),
     "Efficient Lure": WebfishingItemData(offset + 13, ItemClassification.useful),
     "Magnet Lure": WebfishingItemData(offset + 14, ItemClassification.useful),
