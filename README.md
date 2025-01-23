@@ -1,4 +1,6 @@
 # WEBFISHING Archipelago
+> [!CAUTION]  
+> This mod is in an alpha state - there may still be bugs and frustrating item logic! Please play at your own risk!
 ## About
 This is a mod for the game [WEBFISHING](https://store.steampowered.com/app/3146520/WEBFISHING/) that adds [Archipelago](https://archipelago.gg/) integration! The mod isn't feature-complete yet, but is hopefully in a working and mostly bug-free state!
 
