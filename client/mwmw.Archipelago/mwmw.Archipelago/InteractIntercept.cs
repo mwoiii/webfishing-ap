@@ -8,7 +8,7 @@ namespace mwmw.Archipelago {
 
         public IEnumerable<Token> Modify(string path, IEnumerable<Token> tokens) {
             // Input.is_action_just_pressed("interact")
-            var assignWaiter = new MultiTokenWaiter([
+            var inputWaiter = new MultiTokenWaiter([
                 t => t.Type is TokenType.CfIf,
                 t => t is IdentifierToken{Name:"Input"},
                 t => t.Type is TokenType.Period,
@@ -18,11 +18,9 @@ namespace mwmw.Archipelago {
                 t => t.Type is TokenType.ParenthesisClose
         ], allowPartialMatch: false);
 
-
             foreach (var token in tokens) {
-                // appending to after line:
-                // and not get_node("/root/mwmwArchipelago").Menu.visible (:)
-                if (assignWaiter.Check(token)) {
+                if (inputWaiter.Check(token)) {
+                    // ...and not get_node("/root/mwmwArchipelago").Menu.visible (:)
                     yield return token;
 
                     yield return new Token(TokenType.OpAnd);
@@ -35,6 +33,7 @@ namespace mwmw.Archipelago {
                     yield return new IdentifierToken("Menu");
                     yield return new Token(TokenType.Period);
                     yield return new IdentifierToken("visible");
+
                 } else {
                     yield return token;
                 }

@@ -8,7 +8,7 @@ namespace mwmw.Archipelago {
 
         public IEnumerable<Token> Modify(string path, IEnumerable<Token> tokens) {
             // print("nope i dont have ", q)
-            var assignWaiter = new MultiTokenWaiter([
+            var newFishWaiter = new MultiTokenWaiter([
                 t => t.Type is TokenType.BuiltInFunc,
                 t => t.Type is TokenType.ParenthesisOpen,
                 t => t is ConstantToken{Value: StringVariant{Value: "nope i dont have "}},
@@ -17,19 +17,18 @@ namespace mwmw.Archipelago {
                 t => t.Type is TokenType.ParenthesisClose
         ], allowPartialMatch: false);
 
-
             foreach (var token in tokens) {
-                // var total_count = 0
-                // var caught_count = 0
-                // for cat in PlayerData.journal_logs.keys():
-                //      for key in PlayerData.journal_logs[cat].keys():
-                // 	        var catch_data = PlayerData.journal_logs[cat][key]
-                // 	        total_count += PlayerData.ITEM_QUALITIES.size()
-                // 	        caught_count += catch_data["quality"].size()
-                // var ap = get_node("/root/mwmwArchipelago")
-                // if ap.current_goal == ap.Goal.TOTAL_COMPLETION and (caught_count / total_count) * 100 >= ap.total_completion_goal:
-                //     ap.send_victory()
-                if (assignWaiter.Check(token)) {
+                if (newFishWaiter.Check(token)) {
+                    // var total_count = 0
+                    // var caught_count = 0
+                    // for cat in PlayerData.journal_logs.keys():
+                    //      for key in PlayerData.journal_logs[cat].keys():
+                    // 	        var catch_data = PlayerData.journal_logs[cat][key]
+                    // 	        total_count += PlayerData.ITEM_QUALITIES.size()
+                    // 	        caught_count += catch_data["quality"].size()
+                    // var ap = get_node("/root/mwmwArchipelago")
+                    // if ap.Config.current_goal == ap.Config.Goal.TOTAL_COMPLETION and (caught_count / total_count) * 100 >= ap.Config.total_completion_goal:
+                    //     ap.send_victory()
                     yield return token;
 
                     yield return new Token(TokenType.Newline, 2);
@@ -123,9 +122,13 @@ namespace mwmw.Archipelago {
                     yield return new Token(TokenType.CfIf);
                     yield return new IdentifierToken("ap");
                     yield return new Token(TokenType.Period);
+                    yield return new IdentifierToken("Config");
+                    yield return new Token(TokenType.Period);
                     yield return new IdentifierToken("current_goal");
                     yield return new Token(TokenType.OpEqual);
                     yield return new IdentifierToken("ap");
+                    yield return new Token(TokenType.Period);
+                    yield return new IdentifierToken("Config");
                     yield return new Token(TokenType.Period);
                     yield return new IdentifierToken("Goal");
                     yield return new Token(TokenType.Period);
@@ -140,6 +143,8 @@ namespace mwmw.Archipelago {
                     yield return new ConstantToken(new RealVariant(100.0));
                     yield return new Token(TokenType.OpGreaterEqual);
                     yield return new IdentifierToken("ap");
+                    yield return new Token(TokenType.Period);
+                    yield return new IdentifierToken("Config");
                     yield return new Token(TokenType.Period);
                     yield return new IdentifierToken("total_completion_goal");
                     yield return new Token(TokenType.Colon);

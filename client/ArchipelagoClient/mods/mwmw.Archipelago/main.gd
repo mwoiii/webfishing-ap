@@ -1,283 +1,401 @@
 extends Node
 
-const LOCKED_ITEMS = {
-	"Crickets License": null,
-	"Leeches License": null,
-	"Minnows License": null,
-	"Squid License": null,
-	"Nautiluses License": null,
-	"Gilded Worm License": null,
-	"Rod Power 1": null,
-	"Rod Power 2": null,
-	"Rod Power 3": null,
-	"Rod Power 4": null,
-	"Rod Power 5": null,
-	"Rod Power 6": null,
-	"Rod Power 7": null,
-	"Rod Power 8": null,
-	"Rod Speed 1": null,
-	"Rod Speed 2": null,
-	"Rod Speed 3": null,
-	"Rod Speed 4": null,
-	"Rod Speed 5": null,
-	"Rod Chance 1": null,
-	"Rod Chance 2": null,
-	"Rod Chance 3": null,
-	"Rod Chance 4": null,
-	"Rod Chance 5": null,
-	"Tacklebox Upgrade 1": null,
-	"Tacklebox Upgrade 2": null,
-	"Tacklebox Upgrade 3": null,
-	"Tacklebox Upgrade 4": null,
-	"Tacklebox Upgrade 5": null,
-	"Tacklebox Upgrade 6": null,
-	"Tacklebox Upgrade 7": null,
-	"Tacklebox Upgrade 8": null,
-	"Tacklebox Upgrade 9": null,
-	"Buddy Quality Upgrade 1": null,
-	"Buddy Quality Upgrade 2": null,
-	"Buddy Quality Upgrade 3": null,
-	"Buddy Quality Upgrade 4": null,
-	"Buddy Quality Upgrade 5": null,
-	"Buddy Speed Upgrade 1": null,
-	"Buddy Speed Upgrade 2": null,
-	"Buddy Speed Upgrade 3": null,
-	"Buddy Speed Upgrade 4": null,
-	"Buddy Speed Upgrade 5": null,
-	"Rod Luck 1": null,
-	"Rod Luck 2": null,
-	"Rod Luck 3": null,
-	"Rod Luck 4": null,
-	"Rod Luck 5": null,
-	"Fly Hook": null,
-	"Lucky Hook": null,
-	"Patient Lure": null,
-	"Quick Jig": null,
-	"Salty Lure": null,
-	"Fresh Lure": null,
-	"Efficient Lure": null,
-	"Magnet Lure": null,
-	"Large Lure": null,
-	"Attractive Angler": null,
-	"Sparkling Lure": null,
-	"Double Hook": null,
-	"Golden Hook": null,
-	"Challenge Lure": null,
-	"Shower Lure": null
-}
+onready var Config = preload("res://mods/mwmw.Archipelago/config.gd").new()
+onready var NetworkManager = preload("res://mods/mwmw.Archipelago/network_manager.gd").new()
+onready var FileManager = preload("res://mods/mwmw.Archipelago/file_manager.gd").new()
 
-enum Goal {
-	TOTAL_COMPLETION,
-	RANK
-}
-
-var APClient
-var Btn
-var Menu 
-var status_label
-var active = false
-var current_goal = null
-var rank_goal
-var total_completion_goal
+var Btn = null
+var Menu = null
+var status_label = null
+var shop_hints = null
+var unlocked_level = 0
 
 
 func _ready():
 	set_process(false)
 	
-	APClient = preload("res://mods/mwmw.Archipelago/apclient.gd").new()
-	add_child(APClient)
+	add_child(NetworkManager)
+	add_child(FileManager)
+	
+	FileManager.NetworkManager = NetworkManager
+	NetworkManager.FileManager = FileManager
+	FileManager.create_data_files()
 	
 	get_tree().connect("node_added", self, "_on_node_added")
 	get_tree().connect("node_removed", self, "_on_node_removed")
 	UserSave.connect("_slot_saved", self, "_on_slot_saved")
-	APClient.connect("status_changed", self, "_on_status_changed")
-	APClient.connect("network_message", self, "_on_network_message")
-	APClient.connect("received_item", self, "_on_received_item")
-	APClient.connect("connected", self, "_on_connected")
-	APClient.connect("connection_lost", self, "_on_connection_lost")
+	NetworkManager.connect("status_changed", self, "_on_status_changed")
+	NetworkManager.connect("network_message", self, "_on_network_message")
+	NetworkManager.connect("received_item", self, "_on_received_item")
+	NetworkManager.connect("connected", self, "_on_connected")
+	NetworkManager.connect("connection_lost", self, "_on_connection_lost")
+	NetworkManager.connect("received_location_info", self, "_on_received_location_info")
 	
 	# connect_to_server("127.0.0.1", "38281", "MwoiWebfishing", "")
 
 
 func say(msg):
-	APClient.say(msg)
+	NetworkManager.say(msg)
 
 
 func connect_to_server(url, port, slot_name, password):
-	APClient.connect_to_server(url, port, slot_name, password, "WEBFISHING")
-
+	if NetworkManager.inventory != null:
+		FileManager.save_inventory(NetworkManager.inventory)
+	NetworkManager.connect_to_server(url, port, slot_name, password, "WEBFISHING")
 
 func send_victory():
-	APClient.send_victory()
+	NetworkManager.send_victory()
 
 
-func send_check(goal_id, tier):
+func send_shop_check(item_id):
+	NetworkManager.send_checks([float(Config.SHOP_ID[item_id])])
+
+
+func has_shop_check(item_id):
+	if NetworkManager.checked_locations.has(float(Config.SHOP_ID[item_id])):
+		return true
+	return false
+
+
+func send_item_check(item_id):
+	var offset = 94700
+	
+	match item_id:
+		"spectral_rib":
+			NetworkManager.send_checks([offset])
+		"spectral_skull":
+			NetworkManager.send_checks([offset + 1])
+		"spectral_spine":
+			NetworkManager.send_checks([offset + 2])
+		"spectral_humerus":
+			NetworkManager.send_checks([offset + 3])
+		"spectral_femur":
+			NetworkManager.send_checks([offset + 4])
+
+
+func send_quest_check(goal_id, tier):
 	# Tier starts at 0, i.e. tier 0 means first quest completion	
 	# gcq: generic catch quest
 	# scqn: specifc catch quest (normal)
 	# scqh: specific catch quest (hard)
+	#
+	# all these quests are sequential so this is easier?
 	var offset = 94200
 	var gcq_count = 5
 	var scqn_offset = gcq_count * 7
 	var scqn_count = 2
-	var scqh_offset = scqn_offset + scqn_count * 28
+	var scqh_offset = scqn_offset + scqn_count * 13
 	var scqh_count = 1
 	
 	match goal_id:
 		# GENERIC CATCH QUESTS
 		"lake":
 			if tier < gcq_count:
-				APClient.send_checks([offset + tier])
+				NetworkManager.send_checks([offset + tier])
 		"ocean":
 			if tier < gcq_count:
-				APClient.send_checks([offset + gcq_count + tier])
+				NetworkManager.send_checks([offset + gcq_count + tier])
 		"catch_small":
 			if tier < gcq_count:
-				APClient.send_checks([offset + gcq_count * 2 + tier])
+				NetworkManager.send_checks([offset + gcq_count * 2 + tier])
 		"catch_big":
 			if tier < gcq_count:
-				APClient.send_checks([offset + gcq_count * 3 + tier])
+				NetworkManager.send_checks([offset + gcq_count * 3 + tier])
 		"catch_treasure":
 			if tier < gcq_count:
-				APClient.send_checks([offset + gcq_count * 4 + tier])
+				NetworkManager.send_checks([offset + gcq_count * 4 + tier])
 		"catch_rain":
 			if tier < gcq_count:
-				APClient.send_checks([offset + gcq_count * 5 + tier])
+				NetworkManager.send_checks([offset + gcq_count * 5 + tier])
 		"catch_hightier":
 			if tier < gcq_count:
-				APClient.send_checks([offset + gcq_count * 6 + tier])
+				NetworkManager.send_checks([offset + gcq_count * 6 + tier])
 				
 		# SPECIFIC CATCH QUESTS (NORMAL)
 		"fish_lake_sturgeon":
 			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + tier])
+				NetworkManager.send_checks([offset + scqn_offset + tier])
 		"fish_lake_catfish":
 			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count + tier])
+				NetworkManager.send_checks([offset + scqn_offset + scqn_count + tier])
 		"fish_lake_koi":
 			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 2 + tier])
+				NetworkManager.send_checks([offset + scqn_offset + scqn_count * 2 + tier])
 		"fish_lake_frog":
 			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 3 + tier])
+				NetworkManager.send_checks([offset + scqn_offset + scqn_count * 3 + tier])
 		"fish_lake_turtle":
 			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 4 + tier])
+				NetworkManager.send_checks([offset + scqn_offset + scqn_count * 4 + tier])
 		"fish_lake_toad":
 			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 5 + tier])
+				NetworkManager.send_checks([offset + scqn_offset + scqn_count * 5 + tier])
 		"fish_lake_leech":
 			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 6 + tier])
-		"fish_lake_muskellunge":
-			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 7 + tier])
-		"fish_lake_axolotl":
-			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 8 + tier])
-		"fish_lake_alligator":
-			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 9 + tier])
-		"fish_lake_kingsalmon":
-			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 10 + tier])
-		"fish_lake_pupfish":
-			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 11 + tier])
-		"fish_lake_mooneye":
-			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 12 + tier])
+				NetworkManager.send_checks([offset + scqn_offset + scqn_count * 6 + tier])
 		"fish_ocean_eel":
 			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 13 + tier])
-		"fish_ocean_sawfish":
-			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 14 + tier])
+				NetworkManager.send_checks([offset + scqn_offset + scqn_count * 7 + tier])
 		"fish_ocean_swordfish":
 			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 15 + tier])
+				NetworkManager.send_checks([offset + scqn_offset + scqn_count * 8 + tier])
 		"fish_ocean_hammerhead_shark":
 			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 16 + tier])
+				NetworkManager.send_checks([offset + scqn_offset + scqn_count * 9 + tier])
 		"fish_ocean_octopus":
 			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 17 + tier])
+				NetworkManager.send_checks([offset + scqn_offset + scqn_count * 10 + tier])
 		"fish_ocean_seahorse":
 			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 18 + tier])
-		"fish_ocean_manta_ray":
-			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 19 + tier])
-		"fish_ocean_coalacanth":
-			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 20 + tier])
-		"fish_ocean_greatwhiteshark":
-			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 21 + tier])
-		"fish_ocean_manowar":
-			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 22 + tier])
-		"fish_ocean_sea_turtle":
-			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 23 + tier])
-		"fish_ocean_whale":
-			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 24 + tier])
-		"fish_ocean_squid":
-			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 25 + tier])
+				NetworkManager.send_checks([offset + scqn_offset + scqn_count * 11 + tier])
 		"fish_void_voidfish":
 			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 26 + tier])
-		"fish_lake_gar":
-			if tier < scqn_count:
-				APClient.send_checks([offset + scqn_offset + scqn_count * 27 + tier])
+				NetworkManager.send_checks([offset + scqn_offset + scqn_count * 12 + tier])
 		
 		# SPECIFIC CATCH QUESTS (HARD)
 		"fish_ocean_golden_manta_ray":
 			if tier < scqh_count:
-				APClient.send_checks([offset + scqh_offset + tier])
+				NetworkManager.send_checks([offset + scqh_offset + tier])
 		"fish_alien_dog":
 			if tier < scqh_count:
-				APClient.send_checks([offset + scqh_offset + scqh_count + tier])
+				NetworkManager.send_checks([offset + scqh_offset + scqh_count + tier])
 		"fish_rain_heliocoprion":
 			if tier < scqh_count:
-				APClient.send_checks([offset + scqh_offset + scqh_count * 2 + tier])
+				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 2 + tier])
 		"fish_rain_leedsichthys":
 			if tier < scqh_count:
-				APClient.send_checks([offset + scqh_offset + scqh_count * 3 + tier])
+				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 3 + tier])
 		"fish_rain_golden_bass":
 			if tier < scqh_count:
-				APClient.send_checks([offset + scqh_offset + scqh_count * 4 + tier])
+				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 4 + tier])
 		"fish_rain_bullshark":
 			if tier < scqh_count:
-				APClient.send_checks([offset + scqh_offset + scqh_count * 5 + tier])
+				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 5 + tier])
+		"fish_ocean_manta_ray":
+			if tier < scqn_count:
+				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 6 + tier])
+		"fish_lake_gar":
+			if tier < scqn_count:
+				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 7 + tier])
+		"fish_ocean_sawfish":
+			if tier < scqn_count:
+				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 8 + tier])
+		"fish_lake_muskellunge":
+			if tier < scqn_count:
+				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 9 + tier])
+		"fish_lake_axolotl":
+			if tier < scqn_count:
+				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 10 + tier])
+		"fish_lake_pupfish":
+			if tier < scqn_count:
+				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 11 + tier])
+		"fish_lake_mooneye":
+			if tier < scqn_count:
+				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 12 + tier])
+		"fish_ocean_greatwhiteshark":
+			if tier < scqn_count:
+				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 13 + tier])
+		"fish_ocean_whale":
+			if tier < scqn_count:
+				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 14 + tier])
+		"fish_ocean_coalacanth":
+			if tier < scqn_count:
+				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 15 + tier])
+		"fish_lake_alligator":
+			if tier < scqn_count:
+				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 16 + tier])
+		"fish_lake_kingsalmon":
+			if tier < scqn_count:
+				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 17 + tier])
+		"fish_ocean_manowar":
+			if tier < scqn_count:
+				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 18 + tier])
+		"fish_ocean_sea_turtle":
+			if tier < scqn_count:
+				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 19 + tier])
+		"fish_ocean_squid":
+			if tier < scqn_count:
+				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 20 + tier])
 		_:
-			APClient.out("Unrecognised fish id: " + goal_id + ". Couldn't send check!")
+			out("Unrecognised fish id: " + goal_id + ". Couldn't send check!")
+
+
+func get_connection_cache():
+	return FileManager.get_connection_cache()
+
+
+func get_shop_hint(item_id):
+	var net_item = shop_hints[Config.SHOP_ID[item_id] - 95200]
+	return {
+		"name": FileManager.get_name_from_id(net_item.player, net_item.item, "item_id"),
+		"player": NetworkManager.players[net_item.player - 1].name
+	}
+
+
+func out(text):
+	print("APMain: " + str(text))
+
+
+func _generate_general_shop(shop_node):
+	var button_script = load("res://mods/mwmw.Archipelago/scenes/ap_shop_button.gd")
+	var category = shop_node.get_node("instruments").duplicate()
+	category.category_title = "archipelago"
+	var button = category.get_child(0).duplicate()
+	button.set_script(button_script)
+	
+	for child in category.get_children():
+		child.queue_free()
+	
+	for i in range(32):
+		if i + 1 <= 16:
+			var cheap_button = button.duplicate()
+			cheap_button.cost = 250
+			cheap_button.item_id = "cheap_" + str(i + 1)
+			cheap_button.slot_name = "Cheap Archipelago Check"
+			cheap_button.slot_desc = "Help someone out!"
+			cheap_button.icon = preload("res://icon_bronze.png")
+			category.add_child(cheap_button)
+		elif i + 1 <= 24:
+			var moderate_button = button.duplicate()
+			moderate_button.cost = 1000
+			moderate_button.item_id = "moderate_" + str(i + 1)
+			moderate_button.slot_name = "Moderate Archipelago Check"
+			moderate_button.slot_desc = "Help someone out!"
+			moderate_button.icon = preload("res://icon_silver.png")
+			category.add_child(moderate_button)
+		else:
+			var expensive_button = button.duplicate()
+			expensive_button.cost = 5000
+			expensive_button.item_id = "expensive_" + str(i + 1)
+			expensive_button.slot_name = "Expensive Archipelago Check"
+			expensive_button.slot_desc = "Help someone out!"
+			expensive_button.icon = preload("res://icon_gold.png")
+			category.add_child(expensive_button)
+	
+	shop_node.add_child(category)
+
+
+func _generate_progression_shop(shop_node):
+	var button_script = load("res://mods/mwmw.Archipelago/scenes/ap_shop_button.gd")
+	var category = shop_node.get_node("misc").duplicate()
+	category.category_title = "archipelago"
+	var button = category.get_child(0).duplicate()
+	button.set_script(button_script)
+	
+	for child in category.get_children():
+		child.queue_free()
+	
+	var costs = [100, 1000, 2500, 5000]
+	var icons = [preload("res://icon.png"), preload("res://icon_bronze.png"), 
+				preload("res://icon_silver.png"), preload("res://icon_gold.png")]
+	
+	for i in range(4):
+		var progression_button = button.duplicate()
+		progression_button.cost = costs[i]
+		progression_button.icon = icons[i]
+		progression_button.item_id = "progression_" + str(i + 1)
+		progression_button.slot_name = "Archipelago Progression Check"
+		progression_button.slot_desc = "Help someone out!"
+		if i > 0:
+			progression_button.loan_level_require = i
+		category.add_child(progression_button)
+	
+	shop_node.add_child(category)
+
+
+
+func _generate_alt_loot_tables():
+	var lootTable = {
+		# Misc
+		"lake_trash": ["wtrash_bone", "wtrash_boot", "wtrash_branch", "wtrash_drink_rings", "wtrash_plastic_bag", "wtrash_sodacan", "wtrash_weed"],
+		"ocean_trash": ["wtrash_bone", "wtrash_boot", "wtrash_branch", "wtrash_drink_rings", "wtrash_plastic_bag", "wtrash_sodacan", "wtrash_weed"],
+		"rain_spectral": ["fish_rain_anomalocaris", "fish_rain_horseshoe_crab", "fish_rain_heliocoprion"],
+		"alien_spectral": ["fish_alien_dog"],
+		"void_spectral": ["fish_void_voidfish"],
+
+		# Lake fish
+		"lake_travelers": ["fish_lake_salmon", "fish_lake_bass", "fish_lake_carp", "fish_lake_rainbowtrout", "fish_lake_bluegill", "fish_lake_perch", "fish_lake_walleye", "fish_lake_goldfish"],
+		"lake_collectors": ["fish_lake_crayfish", "fish_lake_drum", "fish_lake_guppy", "fish_lake_snail", "fish_lake_frog", "fish_lake_crab"],
+		"lake_shining": ["fish_lake_catfish", "fish_lake_crappie", "fish_lake_pike", "fish_lake_bowfin", "fish_lake_koi", "fish_lake_sturgeon"],
+		"lake_glistening": ["fish_lake_leech", "fish_lake_turtle", "fish_lake_toad"],
+		"lake_opulent": ["fish_lake_muskellunge", "fish_lake_kingsalmon", "fish_lake_gar"],
+		"lake_radiant": ["fish_lake_pupfish", "fish_lake_axolotl", "fish_lake_mooneye"],
+		"lake_alpha": ["fish_lake_alligator", "fish_lake_bullshark"],
+		"lake_prosperous": ["fish_lake_golden_bass", "wtrash_diamond"],
+		"lake_prosperous_rain": ["fish_lake_golden_bass", "wtrash_diamond", "fish_rain_leedsichthys"],
+
+		# Ocean fish
+		"ocean_travelers": ["fish_ocean_atlantic_salmon", "fish_ocean_herring", "fish_ocean_flounder", "fish_ocean_clownfish", "fish_ocean_shrimp", "fish_ocean_angelfish", "fish_ocean_grouper"],
+		"ocean_collectors": ["fish_ocean_krill", "fish_ocean_oyster", "fish_ocean_bluefish", "fish_ocean_lobster", "fish_ocean_tuna", "fish_ocean_seahorse", "fish_ocean_sunfish", "fish_ocean_swordfish"],
+		"ocean_shining": ["fish_ocean_marlin", "fish_ocean_octopus", "fish_ocean_stingray", "fish_ocean_eel", "fish_ocean_dogfish", "fish_ocean_lionfish"],
+		"ocean_glistening": ["fish_ocean_sawfish", "fish_ocean_wolffish", "fish_ocean_hammerhead_shark"],
+		"ocean_opulent": ["fish_ocean_sea_turtle", "fish_ocean_squid", "fish_ocean_manowar", "fish_ocean_manta_ray"],
+		"ocean_radiant": ["fish_ocean_greatwhiteshark"],
+		"ocean_alpha": ["fish_ocean_whale", "fish_ocean_coalacanth"],
+		"ocean_prosperous": ["fish_ocean_golden_manta_ray", "wtrash_diamond"],
+		"ocean_prosperous_rain": ["fish_ocean_golden_manta_ray", "wtrash_diamond", "fish_rain_leedsichthys"],
+	};
+	
+	for table in lootTable.keys():
+		var entries = lootTable[table]
+	
+		var new_table = {}
+		new_table["entries"] = {}
+		
+		var total_weight = 0.0
+		for item in Globals.item_data.keys():
+			var loot_weight = 1.0
+			if entries.has(item):
+				total_weight += loot_weight
+				new_table["entries"][item] = total_weight
+		
+		new_table["total"] = total_weight
+		
+		Globals.loot_tables[table] = new_table
+
+
+func _set_alt_bait_weights():
+	get_node("/root/world/Viewport/main/entities/player").BAIT_DATA = {
+		"": {"catch": 0.0, "max_tier": 0, "quality": []},
+		"worms": {"catch": 0.06, "max_tier": 1, "quality": [1.0]},
+		"cricket": {"catch": 0.06, "max_tier": 2, "quality": [0.0, 1.0]},
+		"leech": {"catch": 0.06, "max_tier": 2, "quality": [0.0, 0.0, 1.0]},
+		"minnow": {"catch": 0.06, "max_tier": 2, "quality": [0.0, 0.0, 0.0, 1.0]},
+		"squid": {"catch": 0.06, "max_tier": 2, "quality": [0.0, 0.0, 0.0, 0.0, 1.0]},
+		"nautilus": {"catch": 0.06, "max_tier": 2, "quality": [0.0, 0.0, 0.0, 0.0, 0.0, 1.0]},
+		"gildedworm": {"catch": 0.06, "max_tier": 2, "quality": [1.0, 0.99, 0.85, 0.75, 0.55, 0.12]},
+	}
 
 
 func _on_slot_saved():
-	APClient.save_inventory()
+	FileManager.save_inventory(NetworkManager.inventory)
 
 
 func _on_node_added(node):
 	if node.filename == "res://Scenes/HUD/Esc Menu/esc_menu.tscn":
-		var btn_resource = preload("res://mods/mwmw.Archipelago/assets/ap_button.tscn")
-		var menu_resource = preload("res://mods/mwmw.Archipelago/assets/ap_connect_menu.tscn")
+		var btn_resource = preload("res://mods/mwmw.Archipelago/scenes/ap_button.tscn")
+		var menu_resource = preload("res://mods/mwmw.Archipelago/scenes/ap_connect_menu.tscn")
 		Btn = btn_resource.instance()
 		Menu = menu_resource.instance()
 		status_label = Menu.get_node("Panel/Panel/VBoxContainer/connection_status")
 		node.add_child(Btn)
 		node.add_child(Menu)
 		
-		APClient.out("Added UI")
+		out("Added UI")
+	
+	elif node.filename == "res://Scenes/HUD/Shop/ShopSetups/general_shop.tscn" and Config.current_goal != null:
+		_generate_general_shop(node)
+	
+	elif node.filename == "res://Scenes/HUD/Shop/ShopSetups/progression_shop.tscn" and Config.current_goal != null:
+		_generate_progression_shop(node)
 
 
 func _on_node_removed(node):
 	if node.filename == "res://Scenes/HUD/Esc Menu/esc_menu.tscn":
-		APClient.disconnect_from_server()
-		current_goal = null
-		active = false
+		NetworkManager.disconnect_from_server()
+		Config.current_goal = null
+		Config.mode = null
+		_regenerate_loot_tables()
 
 
 func _on_status_changed(status):
@@ -287,21 +405,90 @@ func _on_status_changed(status):
 
 func _on_connected(slot_data):
 	PlayerData._send_notification("Connected to Archipelago!")
-	active = true
-	current_goal = slot_data.goal
-	total_completion_goal = slot_data.total_completion
-	rank_goal = slot_data.rank
+	Config.current_goal = slot_data.goal
+	Config.total_completion_goal = slot_data.total_completion
+	Config.rank_goal = slot_data.rank
+	Config.mode = slot_data.game_mode
+	Config.chance_eq = slot_data.fish_chance_equalizer
+	
+	if Config.mode == Config.Gamemode.ALT:
+		_generate_alt_loot_tables()
+		_set_alt_bait_weights()
+	elif Config.chance_eq > 0:
+		_adjust_fish_weights()
+	
+	NetworkManager.request_location_hints(Config.SHOP_ID.values())
+	unlocked_level = NetworkManager.get_item_count(94043)
+	out(unlocked_level)
 
 
-func _on_network_message(text, text_coloured):
-	APClient.out(text)
+func _adjust_fish_weights():
+	# data structure snippet:
+	# {water_trash:{entries:{wtrash_bone:0.25, wtrash_boot:0.75, wtrash_branch:1.75,
+	# wtrash_diamond:1.93, wtrash_drink_rings:2.93, wtrash_plastic_bag:3.93, wtrash_sodacan:4.93,
+	# wtrash_weed:5.93}, total:5.93}}
+	for table in Globals.loot_tables.keys():
+		var total = 0.0
+		var last_fish_weight = 0.0
+		for fish in Globals.loot_tables[table].entries.keys():
+			var current_weight = Globals.loot_tables[table].entries[fish] - last_fish_weight
+			total = current_weight + (1 - current_weight) * Config.chance_eq + total
+			last_fish_weight = Globals.loot_tables[table].entries[fish]
+			Globals.loot_tables[table].entries[fish] = total
+		Globals.loot_tables[table].total = total
+
+
+func _regenerate_loot_tables():
+	Globals._generate_loot_tables("fish", "lake")
+	Globals._generate_loot_tables("fish", "ocean")
+	Globals._generate_loot_tables("fish", "deep")
+	Globals._generate_loot_tables("fish", "prehistoric")
+	Globals._generate_loot_tables("fish", "rain")
+	Globals._generate_loot_tables("fish", "alien")
+	Globals._generate_loot_tables("fish", "void")
+	Globals._generate_loot_tables("fish", "water_trash")
+	Globals._generate_loot_tables("bug", "bush_bug")
+	Globals._generate_loot_tables("bug", "shoreline_bug")
+	Globals._generate_loot_tables("bug", "tree_bug")
+	Globals._generate_loot_tables("none", "seashell")
+	Globals._generate_loot_tables("none", "trash")
+	Globals._generate_loot_tables("fish", "metal")
+
+
+func _on_network_message(msg_data):
+	var text = ""
+	var text_coloured = ""
+	for part in msg_data:
+		if part.has("type"):
+			match part.type:
+				"player_id":
+					var id = int(part.text) - 1
+					text += NetworkManager.players[id].name
+					text_coloured += Config.PLAYER_COLOURS[fmod(id, 7)] + NetworkManager.players[id].name + "[/color]"
+				"item_id":
+					var name = FileManager.get_name_from_id(part.player, part.text, part.type)
+					text += name
+					text_coloured += Config.ITEM_COLOURS[fmod(int(part.flags), 3)] + name + "[/color]"
+				"location_id":
+					var name = FileManager.get_name_from_id(part.player, part.text, part.type)
+					text += name
+					text_coloured += Config.LOCATION_COLOUR + name + "[/color]"
+				_:
+					text += part.text
+					text_coloured += Config.LOCATION_COLOUR + part.text + "[/color]"
+		else:
+			text += part.text
+			text_coloured += Config.TEXT_COLOUR + part.text + "[/color]"
+	
+	out(text)
 	Network._update_chat(text_coloured, true)
 
 
 func _on_received_item(item):
-	var name
-	var item_id
-	var lure_id
+	var name = null
+	var item_id = null
+	var lure_id = null
+	var is_bone = false
 	
 	match str(item):
 		"94000":
@@ -421,10 +608,38 @@ func _on_received_item(item):
 		"94042":
 			name = "$5000"
 			PlayerData.money += 5000
+		"94043":
+			name = "Progressive Camp Tier Unlock"
+			unlocked_level += 1
+		"94044":
+			name = "Spectral Rib"
+			item_id = "spectral_rib"
+			is_bone = true
+		"94045":
+			name = "Spectral Skull"
+			item_id = "spectral_skull"
+			is_bone = true
+		"94046":
+			name = "Spectral Spine"
+			item_id = "spectral_spine"
+			is_bone = true
+		"94047":
+			name = "Spectral Humerus"
+			item_id = "spectral_humerus"
+			is_bone = true
+		"94048":
+			name = "Spectral Femur"
+			item_id = "spectral_femur"
+			is_bone = true
 	
 	if item_id:
 		name = Globals.item_data[item_id]["file"].item_name
 		PlayerData._add_item(item_id)
+		if is_bone and not PlayerData.saved_tags.has("spectral"):
+			yield (get_tree().create_timer(5.0), "timeout")
+			PlayerData.saved_tags.append("spectral")
+			PlayerData._send_notification("you feel an otherworldly force beckon you...")
+			Network._update_chat("[color=#008583]" + "you feel an otherwordly force beckon you..." + "[/color]")
 	elif lure_id:
 		name = PlayerData.LURE_DATA[lure_id].name.to_upper()
 		PlayerData.lure_unlocked.append(lure_id)
@@ -434,5 +649,8 @@ func _on_received_item(item):
 
 
 func _on_connection_lost():
-	PlayerData._send_notification("Lost connection to Archipelago! Attempting to reconnect...")
+	PlayerData._send_notification("Disconnected from Archipelago!")
 
+
+func _on_received_location_info(locations):
+	shop_hints = locations

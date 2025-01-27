@@ -18,11 +18,12 @@ func _ready():
 	
 	self.focus_mode = Control.FOCUS_ALL
 	
-	var cache_dict = APMain.APClient.get_connection_cache()
+	var cache_dict = APMain.FileManager.get_connection_cache()
 	if cache_dict:
 		_url.text = cache_dict.url
 		_port.text = cache_dict.port
 		_slot_name.text = cache_dict.slot_name
+
 
 func _on_close_pressed():
 	self.visible = false

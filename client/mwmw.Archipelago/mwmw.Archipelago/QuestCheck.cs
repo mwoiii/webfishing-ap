@@ -3,12 +3,12 @@ using GDWeave.Godot.Variants;
 using GDWeave.Modding;
 
 namespace mwmw.Archipelago {
-    public class APCheck : IScriptMod {
+    public class QuestCheck : IScriptMod {
         public bool ShouldRun(string path) => path == "res://Scenes/Singletons/playerdata.gdc";
 
         public IEnumerable<Token> Modify(string path, IEnumerable<Token> tokens) {
             // money += data["gold_reward"]
-            var assignWaiter = new MultiTokenWaiter([
+            var rewardWaiter = new MultiTokenWaiter([
                 t => t is IdentifierToken{Name:"money"},
                 t => t.Type is TokenType.OpAssignAdd,
                 t => t is IdentifierToken{Name:"data"},
@@ -17,11 +17,9 @@ namespace mwmw.Archipelago {
                 t => t.Type is TokenType.BracketClose
         ], allowPartialMatch: false);
 
-
-
             foreach (var token in tokens) {
-                // get_node("/root/mwmwArchipelago").send_check(data["goal_id"], data["tier"])
-                if (assignWaiter.Check(token)) {
+                if (rewardWaiter.Check(token)) {
+                    // get_node("/root/mwmwArchipelago").send_quest_check(data["goal_id"], data["tier"])
                     yield return token;
 
                     yield return new Token(TokenType.Newline, 1);
@@ -30,7 +28,7 @@ namespace mwmw.Archipelago {
                     yield return new ConstantToken(new StringVariant("/root/mwmwArchipelago"));
                     yield return new Token(TokenType.ParenthesisClose);
                     yield return new Token(TokenType.Period);
-                    yield return new IdentifierToken("send_check");
+                    yield return new IdentifierToken("send_quest_check");
                     yield return new Token(TokenType.ParenthesisOpen);
                     yield return new IdentifierToken("data");
                     yield return new Token(TokenType.BracketOpen);
@@ -42,6 +40,7 @@ namespace mwmw.Archipelago {
                     yield return new ConstantToken(new StringVariant("tier"));
                     yield return new Token(TokenType.BracketClose);
                     yield return new Token(TokenType.ParenthesisClose);
+
                 } else {
                     yield return token;
                 }

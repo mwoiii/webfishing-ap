@@ -8,7 +8,7 @@ namespace mwmw.Archipelago {
 
         public IEnumerable<Token> Modify(string path, IEnumerable<Token> tokens) {
             // Network._send_message(final, final_color, chat_local)
-            var assignWaiter = new MultiTokenWaiter([
+            var messageWaiter = new MultiTokenWaiter([
                 t => t is IdentifierToken{Name:"Network"},
                 t => t.Type is TokenType.Period,
                 t => t is IdentifierToken{Name:"_send_message"},
@@ -21,11 +21,9 @@ namespace mwmw.Archipelago {
                 t => t.Type is TokenType.ParenthesisClose
         ], allowPartialMatch: false);
 
-
-
             foreach (var token in tokens) {
-                // if chat_local: get_node("/root/mwmwArchipelago").say(final)
-                if (assignWaiter.Check(token)) {
+                if (messageWaiter.Check(token)) {
+                    // if chat_local: get_node("/root/mwmwArchipelago").say(final)
                     yield return token;
 
                     yield return new Token(TokenType.Newline, 1);
@@ -41,6 +39,7 @@ namespace mwmw.Archipelago {
                     yield return new Token(TokenType.ParenthesisOpen);
                     yield return new IdentifierToken("final_text");
                     yield return new Token(TokenType.ParenthesisClose);
+
                 } else {
                     yield return token;
                 }

@@ -8,18 +8,17 @@ namespace mwmw.Archipelago {
 
         public IEnumerable<Token> Modify(string path, IEnumerable<Token> tokens) {
             // level = lvl
-            var assignWaiter = new MultiTokenWaiter([
+            var levelWaiter = new MultiTokenWaiter([
                 t => t is IdentifierToken{Name:"level"},
                 t => t.Type is TokenType.OpAssign,
                 t => t is IdentifierToken{Name:"lvl"},
         ], allowPartialMatch: false);
 
-
             foreach (var token in tokens) {
-                // var ap = get_node("/root/mwmwArchipelago")
-                // if ap.current_goal == ap.Goal.RANK and lvl >= ap.rank_goal:
-                //     ap.send_victory()
-                if (assignWaiter.Check(token)) {
+                if (levelWaiter.Check(token)) {
+                    // var ap = get_node("/root/mwmwArchipelago")
+                    // if ap.Config.current_goal == ap.Config.Goal.RANK and lvl >= ap.Config.rank_goal:
+                    //     ap.send_victory()
                     yield return token;
 
                     yield return new Token(TokenType.Newline, 1);
@@ -35,9 +34,13 @@ namespace mwmw.Archipelago {
                     yield return new Token(TokenType.CfIf);
                     yield return new IdentifierToken("ap");
                     yield return new Token(TokenType.Period);
+                    yield return new IdentifierToken("Config");
+                    yield return new Token(TokenType.Period);
                     yield return new IdentifierToken("current_goal");
                     yield return new Token(TokenType.OpEqual);
                     yield return new IdentifierToken("ap");
+                    yield return new Token(TokenType.Period);
+                    yield return new IdentifierToken("Config");
                     yield return new Token(TokenType.Period);
                     yield return new IdentifierToken("Goal");
                     yield return new Token(TokenType.Period);
@@ -46,6 +49,8 @@ namespace mwmw.Archipelago {
                     yield return new IdentifierToken("lvl");
                     yield return new Token(TokenType.OpGreaterEqual);
                     yield return new IdentifierToken("ap");
+                    yield return new Token(TokenType.Period);
+                    yield return new IdentifierToken("Config");
                     yield return new Token(TokenType.Period);
                     yield return new IdentifierToken("rank_goal");
                     yield return new Token(TokenType.Colon);
@@ -56,6 +61,7 @@ namespace mwmw.Archipelago {
                     yield return new IdentifierToken("send_victory");
                     yield return new Token(TokenType.ParenthesisOpen);
                     yield return new Token(TokenType.ParenthesisClose);
+
                 } else {
                     yield return token;
                 }

@@ -8,7 +8,7 @@ namespace mwmw.Archipelago {
 
         public IEnumerable<Token> Modify(string path, IEnumerable<Token> tokens) {
             // OptionsMenu._close()
-            var assignWaiter = new MultiTokenWaiter([
+            var closeWaiter = new MultiTokenWaiter([
                 t => t is IdentifierToken{Name:"OptionsMenu"},
                 t => t.Type is TokenType.Period,
                 t => t is IdentifierToken{Name:"_close"},
@@ -16,10 +16,9 @@ namespace mwmw.Archipelago {
                 t => t.Type is TokenType.ParenthesisClose
         ], allowPartialMatch: false);
 
-
             foreach (var token in tokens) {
-                // get_node("/root/mwmwArchipelago").Menu.visible = false
-                if (assignWaiter.Check(token)) {
+                if (closeWaiter.Check(token)) {
+                    // get_node("/root/mwmwArchipelago").Menu.visible = false
                     yield return token;
 
                     yield return new Token(TokenType.Newline, 1);
