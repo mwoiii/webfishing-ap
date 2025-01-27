@@ -2,17 +2,19 @@ from dataclasses import dataclass
 from Options import Toggle, DefaultOnToggle, DeathLink, Range, Choice, PerGameCommonOptions  # , OptionGroup
 
 
-
 class Goal(Choice):
     """
     Total Journal Completion: Reach a specific percentage threshold in total journal completion
     (i.e. all fish, all rarities).
 
     Rank: Reach a specific rank.
+
+    Completed Camp: Unlock all camp tiers and purchase the final tier.
     """
     display_name = "Goal"
     option_total_completion = 0
     option_rank = 1
+    option_camp = 2
     default = 0
 
 
@@ -21,7 +23,7 @@ class TotalCompletion(Range):
     display_name = "Required Journal Percentage"
     range_start = 1
     range_end = 100
-    default = 70
+    default = 60
 
 
 class Rank(Range):
@@ -31,6 +33,40 @@ class Rank(Range):
     range_end = 50
     default = 40
 
+
+class GameMode(Choice):
+    """
+    Classic: The classic WEBFISHING experience. Progression is unchanged;
+    all fish have their normal catch rates by default.
+
+    Streamlined: Fish are tied to specific rods (which are free from the
+    shop), and have equal catch rates in their respective pools. The
+    quality of fish is guaranteed depending on which bait you use.
+    Based on Eszenn's Archipelago Tweaks mod. See the full loot pool
+    here:
+    https://github.com/Eszenn/Webfishing-Archipelago-Tweaks/tree/main
+    """
+    display_name = "Game Mode"
+    option_classic = 0
+    option_streamlined = 1
+    default = 0
+
+
+class RareFishChecks(Toggle):
+    """Whether "rare" fish will have associated checks or not."""
+    display_name = "Rare Fish Checks"
+    default = 1
+
+
+class FishChanceEqualizer(Toggle):
+    """
+    For the Classic game mode. How much the fish catch chances are equalized.
+    At 0, all fish have default odds. At 1, they all have equal odds.
+    """
+    display_name = "Fish Chance Equalizer"
+    range_start = 0
+    range_end = 1
+    default = 0
 
 # class ProgressiveCampTier(Toggle):
 #     """Whether camp tiers need to be received or not."""
@@ -88,6 +124,9 @@ class WebfishingOptions(PerGameCommonOptions):
     goal: Goal
     total_completion: TotalCompletion
     rank: Rank
+    game_mode: GameMode
+    rare_fish_checks: RareFishChecks
+    fish_chance_equalizer: FishChanceEqualizer
     # progressive_camp_tier = ProgressiveCampTier
     # lock_upgrades_behind_camp = LockUpgradesBehindCamp
     # progressive_rod_upgrade = ProgressiveRodUpgrade

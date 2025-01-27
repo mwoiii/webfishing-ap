@@ -19,11 +19,6 @@ item_table = {
     "Progressive Rod Luck": WebfishingItemData(offset + 3, ItemClassification.progression),
     "Progressive Tacklebox Upgrade": WebfishingItemData(offset + 4, ItemClassification.progression),
     "Progressive Bait": WebfishingItemData(offset + 5, ItemClassification.progression),
-    # "Crickets Bait": WebfishingItemData(offset + 6, ItemClassification.progression),
-    # "Leeches Bait": WebfishingItemData(offset + 7, ItemClassification.progression),
-    # "Minnows Bait": WebfishingItemData(offset + 8, ItemClassification.progression),
-    # "Squid Bait": WebfishingItemData(offset + 9, ItemClassification.progression),
-    # "Nautiluses Bait": WebfishingItemData(offset + 10, ItemClassification.progression),
     "Fly Hook": WebfishingItemData(offset + 6, ItemClassification.useful),
     "Patient Lure": WebfishingItemData(offset + 7, ItemClassification.useful),
     "Lucky Hook": WebfishingItemData(offset + 8, ItemClassification.useful),
@@ -60,8 +55,14 @@ item_table = {
     "Money ($100)": WebfishingItemData(offset + 39, ItemClassification.filler),
     "Money ($500)": WebfishingItemData(offset + 40, ItemClassification.filler),
     "Money ($1000)": WebfishingItemData(offset + 41, ItemClassification.useful),
-    "Money ($5000)": WebfishingItemData(offset + 42, ItemClassification.useful)
-    # "Progressive Camp Tier": WebfishingItemData(offset + 43, ItemClassification.progression),
+    "Money ($5000)": WebfishingItemData(offset + 42, ItemClassification.useful),
+    "Progressive Camp Tier Unlock": WebfishingItemData(offset + 43, ItemClassification.progression),
+    "Spectral Rib": WebfishingItemData(offset + 44, ItemClassification.filler),
+    "Spectral Skull": WebfishingItemData(offset + 45, ItemClassification.filler),
+    "Spectral Spine": WebfishingItemData(offset + 46, ItemClassification.filler),
+    "Spectral Humerus": WebfishingItemData(offset + 47, ItemClassification.filler),
+    "Spectral Femur": WebfishingItemData(offset + 48, ItemClassification.filler),
+
 }
 
 fixed_quantities = {
@@ -73,7 +74,6 @@ fixed_quantities = {
     "Progressive Bait": 6,
     "Progressive Buddy Quality Upgrade": 5,
     "Progressive Buddy Speed Upgrade": 5,
-    # "Progressive Camp Tier": 3,
     "Fly Hook": 1,
     "Patient Lure": 1,
     "Lucky Hook": 1,
@@ -91,18 +91,11 @@ fixed_quantities = {
     "Golden Hook": 1,
     "Money ($1000)": 5,
     "Money ($5000)": 2,
+    "Progressive Camp Tier Unlock": 3,
 }
 
-# bait_unlocks_quantity = {
-#     "Crickets Bait": 1,
-#     "Leeches Bait": 1,
-#     "Minnows Bait": 1,
-#     "Squid Bait": 1,
-#     "Nautiluses Bait": 1,
-# }
-
 filler_weights = {
-    "Treasure Chest": 40,
+    "Treasure Chest": 50,
     "Catcher's Cola": 15,
     "Catcher's Cola ULTRA": 13,
     "Catcher's Cola DELUXE": 10,
