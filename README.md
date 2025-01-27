@@ -4,15 +4,19 @@
 ## About
 This is a mod for the game [WEBFISHING](https://store.steampowered.com/app/3146520/WEBFISHING/) that adds [Archipelago](https://archipelago.gg/) integration! The mod isn't feature-complete yet, but is hopefully in a working and mostly bug-free state!
 
-In the current version, all checks are from particular quests from the quest board, and the receivable items consist of:
+In the current version, you can get checks from purchases and quests, and the receivable items consist of:
 - Progressive rod/bait upgrades
+- Progressive camp tier unlocks
 - Lures
 - Consumables (Drinks, scratch-offs, treasure chests)
 - Money
+- Spectral bones
 
-"Victory" is achieved by either reaching a specified target rank, or by reaching a certain percentage journal completion (100% journal completion is all fish, all rarities).
+"Victory" can be set to either reaching a specified target rank, reaching a certain percentage journal completion, or by unlocking and purchasing the final camp tier.
 
 This mod is multiplayer-compatible! You can fish alongside friends or strangers, regardless of whether or not they have the mod!
+
+And a big thanks to [Eszenn](https://github.com/Eszenn) for letting me integrate their code into the mod!
 
 ## Connecting
 With the mod installed, you can connect to an Archipelago server through the Archipelago button on the esc. menu once you load into a game. The button will open up a connection panel when pressed, which will let you enter all the relevant info.
