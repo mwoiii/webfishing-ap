@@ -9,7 +9,7 @@ class Goal(Choice):
 
     Rank: Reach a specific rank.
 
-    Completed Camp: Unlock all camp tiers and purchase the final tier.
+    Camp: Unlock all camp tiers and purchase the final tier.
     """
     display_name = "Goal"
     option_total_completion = 0
@@ -58,14 +58,14 @@ class RareFishChecks(Toggle):
     default = 1
 
 
-class FishChanceEqualizer(Toggle):
+class FishChanceEqualizer(Range):
     """
-    For the Classic game mode. How much the fish catch chances are equalized.
-    At 0, all fish have default odds. At 1, they all have equal odds.
+    For the Classic game mode. A number between 0 and 100 that dictates how much the fish catch
+    chances are equalized. At 0, all fish have default odds. At 100, they all have equal odds.
     """
     display_name = "Fish Chance Equalizer"
     range_start = 0
-    range_end = 1
+    range_end = 100
     default = 0
 
 # class ProgressiveCampTier(Toggle):

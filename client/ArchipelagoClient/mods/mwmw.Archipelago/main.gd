@@ -409,7 +409,7 @@ func _on_connected(slot_data):
 	Config.total_completion_goal = slot_data.total_completion
 	Config.rank_goal = slot_data.rank
 	Config.mode = slot_data.game_mode
-	Config.chance_eq = slot_data.fish_chance_equalizer
+	Config.chance_eq = float(slot_data.fish_chance_equalizer) / 100
 	
 	if Config.mode == Config.Gamemode.ALT:
 		_generate_alt_loot_tables()
