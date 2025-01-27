@@ -85,6 +85,7 @@ func send_victory():
 
 
 func send_packet(packet):
+	_out("Sending message: " + packet)
 	var bytes = packet.to_utf8()
 	_socket.get_peer(1).put_packet(bytes)
 
@@ -173,6 +174,8 @@ func _on_data_received():
 	var string = packet.get_string_from_utf8()
 	var obj = JSON.parse(string).result[0]
 	var cmd = obj.cmd
+	
+	_out("Received message with command: " + cmd)
 	
 	match cmd:
 		"RoomInfo":
