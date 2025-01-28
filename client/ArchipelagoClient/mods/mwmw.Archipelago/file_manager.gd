@@ -5,6 +5,7 @@ const _CONN_CACHE_LOC = "user://ap_data/conncache.save"
 
 var inventory_loc = null
 var NetworkManager = null
+var _slot_info = null
 
 
 func create_data_files():
@@ -46,7 +47,8 @@ func get_name_from_id(slot, id, type):
 	file.open(_GAME_CACHE_LOC, File.READ)
 	while file.get_position() < file.get_len():
 		var cache_dict = parse_json(file.get_line())
-		if cache_dict.slot == str(slot):
+		var game = _slot_info[str(slot)].game
+		if cache_dict.game == str(game):
 			var name
 			match type:
 				"item_id":
@@ -101,6 +103,11 @@ func cache_connection_settings(url, port, slot_name):
 
 
 func cache_game_settings(slot_info):
+	_slot_info = slot_info
+	# slot part of game_to_slot is now redundant
+	# as ids are retrieved by game and not id
+	# for obvious reasons
+	# (people playing same game)
 	var game_to_slot = {}
 	for slot in slot_info:
 		game_to_slot[slot_info[slot].game] = slot
@@ -145,7 +152,7 @@ func cache_game_settings(slot_info):
 			"checksum": game_data[game].checksum,
 			"id_to_item": id_to_item,
 			"id_to_loc": id_to_loc,
-			"slot": game_to_slot[game]
+			# "slot": game_to_slot[game]
 		}
 		file.store_string(to_json(cache_dict) + "\n")
 	file.close()

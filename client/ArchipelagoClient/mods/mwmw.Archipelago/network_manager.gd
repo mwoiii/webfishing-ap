@@ -27,7 +27,7 @@ var _seed_name = null
 
 func _ready():
 	set_process(false)
-	
+	_socket.set_buffers(1024, 32, 1024, 32)
 	TimeoutTimer.set_wait_time(10.0)
 	add_child(TimeoutTimer)
 	
@@ -174,8 +174,6 @@ func _on_data_received():
 	var string = packet.get_string_from_utf8()
 	var obj = JSON.parse(string).result[0]
 	var cmd = obj.cmd
-	
-	_out("Received message with command: " + cmd)
 	
 	match cmd:
 		"RoomInfo":
