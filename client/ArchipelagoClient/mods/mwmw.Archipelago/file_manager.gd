@@ -111,11 +111,14 @@ func cache_game_settings(slot_info):
 	var game_to_slot = {}
 	for slot in slot_info:
 		game_to_slot[slot_info[slot].game] = slot
-	var games_string = JSON.print(game_to_slot.keys())
-	NetworkManager.send_packet('[{"cmd": "GetDataPackage", "games":' + games_string + '}]')
-	var datapackage = yield(NetworkManager, "_datapackage_received")
-	
-	var game_data = datapackage.data.games
+		
+	var game_data = {}
+	for key in game_to_slot.keys():
+		var games_string = JSON.print([key])
+		NetworkManager.send_packet('[{"cmd": "GetDataPackage", "games":' + games_string + '}]')
+		var datapackage = yield(NetworkManager, "_datapackage_received")
+		game_data.merge(datapackage.data.games)
+		
 	var file = File.new()
 	
 	# Compare checksums

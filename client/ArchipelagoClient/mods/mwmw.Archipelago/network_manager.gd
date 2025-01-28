@@ -27,7 +27,7 @@ var _seed_name = null
 
 func _ready():
 	set_process(false)
-	_socket.set_buffers(1024, 32, 1024, 32)
+	_socket.set_buffers(2048, 1024, 2048, 1024)
 	TimeoutTimer.set_wait_time(10.0)
 	add_child(TimeoutTimer)
 	
