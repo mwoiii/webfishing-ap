@@ -111,17 +111,23 @@ func send_victory():
 	APClient.send_victory()
 
 
-func send_check(goal_id, tier):
+func send_check(goal_id, tier, action):
 	# Tier starts at 0, i.e. tier 0 means first quest completion	
 	# gcq: generic catch quest
 	# scqn: specifc catch quest (normal)
 	# scqh: specific catch quest (hard)
+	#
+	# all these quests are sequential so this is easier?
 	var offset = 94200
 	var gcq_count = 5
 	var scqn_offset = gcq_count * 7
 	var scqn_count = 2
 	var scqh_offset = scqn_offset + scqn_count * 28
 	var scqh_count = 1
+	
+	match action:
+		"catch_small", "catch_big", "catch_treasure", "catch_rain", "catch_hightier":
+			goal_id = action
 	
 	match goal_id:
 		# GENERIC CATCH QUESTS

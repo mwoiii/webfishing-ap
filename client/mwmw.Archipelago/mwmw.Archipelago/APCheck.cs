@@ -20,8 +20,8 @@ namespace mwmw.Archipelago {
 
 
             foreach (var token in tokens) {
-                // get_node("/root/mwmwArchipelago").send_check(data["goal_id"], data["tier"])
                 if (assignWaiter.Check(token)) {
+                    // get_node("/root/mwmwArchipelago").send_check(data["goal_id"], data["tier"], data["action"])
                     yield return token;
 
                     yield return new Token(TokenType.Newline, 1);
@@ -40,6 +40,11 @@ namespace mwmw.Archipelago {
                     yield return new IdentifierToken("data");
                     yield return new Token(TokenType.BracketOpen);
                     yield return new ConstantToken(new StringVariant("tier"));
+                    yield return new Token(TokenType.BracketClose);
+                    yield return new Token(TokenType.Comma);
+                    yield return new IdentifierToken("data");
+                    yield return new Token(TokenType.BracketOpen);
+                    yield return new ConstantToken(new StringVariant("action"));
                     yield return new Token(TokenType.BracketClose);
                     yield return new Token(TokenType.ParenthesisClose);
                 } else {
