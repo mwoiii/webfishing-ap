@@ -45,7 +45,7 @@ var _slot_info
 
 func connect_to_server(url, port, slot_name, password, game):
 	_socket.disconnect_from_host()
-	_socket.set_buffers(1024, 32, 1024, 32)
+	_socket.set_buffers(2048, 1024, 2048, 1024)
 	_set_status("Attempting connection...")
 	
 	_url = url
