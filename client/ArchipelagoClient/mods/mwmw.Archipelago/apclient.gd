@@ -40,10 +40,12 @@ var _game
 var _seed_name
 var _inventory_loc
 var _inventory
+var _slot_info
 
 
 func connect_to_server(url, port, slot_name, password, game):
 	_socket.disconnect_from_host()
+	_socket.set_buffers(1024, 32, 1024, 32)
 	_set_status("Attempting connection...")
 	
 	_url = url
@@ -272,6 +274,8 @@ func _reverse_dict_str(dict):
 
 
 func _cache_game_settings(slot_info):
+	_slot_info = slot_info
+	
 	var game_to_slot = {}
 	for slot in slot_info:
 		game_to_slot[slot_info[slot].game] = slot
@@ -316,7 +320,7 @@ func _cache_game_settings(slot_info):
 			"checksum": game_data[game].checksum,
 			"id_to_item": id_to_item,
 			"id_to_loc": id_to_loc,
-			"slot": game_to_slot[game]
+			# "slot": game_to_slot[game]
 		}
 		file.store_string(to_json(cache_dict) + "\n")
 	file.close()
@@ -332,7 +336,8 @@ func _get_name_from_id(slot, id, type):
 	file.open(_GAME_CACHE_LOC, File.READ)
 	while file.get_position() < file.get_len():
 		var cache_dict = parse_json(file.get_line())
-		if cache_dict.slot == str(slot):
+		var game = _slot_info[str(slot)].game
+		if cache_dict.game == str(game):
 			var name
 			match type:
 				"item_id":
