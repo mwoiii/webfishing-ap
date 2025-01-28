@@ -73,7 +73,7 @@ func send_item_check(item_id):
 			NetworkManager.send_checks([offset + 4])
 
 
-func send_quest_check(goal_id, tier):
+func send_quest_check(goal_id, tier, action):
 	# Tier starts at 0, i.e. tier 0 means first quest completion	
 	# gcq: generic catch quest
 	# scqn: specifc catch quest (normal)
@@ -86,6 +86,10 @@ func send_quest_check(goal_id, tier):
 	var scqn_count = 2
 	var scqh_offset = scqn_offset + scqn_count * 13
 	var scqh_count = 1
+	
+	match action:
+		"catch_small", "catch_big", "catch_treasure", "catch_rain", "catch_hightier":
+			goal_id = action
 	
 	match goal_id:
 		# GENERIC CATCH QUESTS
