@@ -20,6 +20,13 @@ public class RodLootTablePatch : IScriptMod {
         ], allowPartialMatch: true);
 
         // treasure_mult = 2.0
+        var treasureWaiter = new MultiTokenWaiter([
+            t => t is IdentifierToken { Name:"treasure_mult"},
+            t => t.Type is TokenType.OpAssign,
+            t => t is ConstantToken{Value: RealVariant{Value: 2.0}}
+        ]);
+
+        // fish_type = "rain"
         var fishTypeWaiter = new MultiTokenWaiter([
             t => t is IdentifierToken { Name:"fish_type"},
             t => t.Type is TokenType.OpAssign,
@@ -43,9 +50,22 @@ public class RodLootTablePatch : IScriptMod {
 
         foreach (var token in tokens) {
             if (heldItemWaiter.Check(token)) {
+                // print("Equipped item with id: " + item_data["id"])
+                // match item_data["id"]:
+                //   "fishing_rod_simple": equipped_rod = PlayerData.ROD.SIMPLE
+                //   "fishing_rod_simple": equipped_rod = PlayerData.ROD.SIMPLE
+                //   "fishing_rod_travelers": equipped_rod = PlayerData.ROD.TRAVELERS
+                //   "fishing_rod_collectors": equipped_rod = PlayerData.ROD.COLLECTORS
+                //   "fishing_rod_collectors_shining": equipped_rod = PlayerData.ROD.SHINING
+                //   "fishing_rod_collectors_opulent": equipped_rod = PlayerData.ROD.OPULENT
+                //   "fishing_rod_collectors_glistening": equipped_rod = PlayerData.ROD.GLISTENING
+                //   "fishing_rod_collectors_radiant": equipped_rod = PlayerData.ROD.RADIANT
+                //   "fishing_rod_collectors_alpha": equipped_rod = PlayerData.ROD.ALPHA
+                //   "fishing_rod_prosperous": equipped_rod = PlayerData.ROD.PROSPEROUS
+                //   "fishing_rod_skeleton": equipped_rod = PlayerData.ROD.SPECTRAL
+                // print("Equipped Rod: ", PlayerData.equipped_rod)
                 yield return token;
 
-                // print("Equipped item with id: " + item_data["id"])
                 yield return new Token(TokenType.BuiltInFunc, (uint?)BuiltinFunction.TextPrint);
                 yield return new Token(TokenType.ParenthesisOpen);
                 yield return new ConstantToken(new StringVariant("Equipped item with id: "));
@@ -57,7 +77,6 @@ public class RodLootTablePatch : IScriptMod {
                 yield return new Token(TokenType.ParenthesisClose);
                 yield return new Token(TokenType.Newline, 1);
 
-                // match item_data["id"]:
                 yield return new Token(TokenType.CfMatch);
                 yield return new IdentifierToken("item_data");
                 yield return new Token(TokenType.BracketOpen);
@@ -66,7 +85,6 @@ public class RodLootTablePatch : IScriptMod {
                 yield return new Token(TokenType.Colon);
                 yield return new Token(TokenType.Newline, 2);
 
-                // "fishing_rod_simple": equipped_rod = PlayerData.ROD.SIMPLE
                 yield return new ConstantToken(new StringVariant("fishing_rod_simple"));
                 yield return new Token(TokenType.Colon);
                 yield return new IdentifierToken("PlayerData");
@@ -80,7 +98,6 @@ public class RodLootTablePatch : IScriptMod {
                 yield return new IdentifierToken("SIMPLE");
                 yield return new Token(TokenType.Newline, 2);
 
-                // "fishing_rod_travelers": equipped_rod = PlayerData.ROD.TRAVELERS
                 yield return new ConstantToken(new StringVariant("fishing_rod_travelers"));
                 yield return new Token(TokenType.Colon);
                 yield return new IdentifierToken("PlayerData");
@@ -94,7 +111,7 @@ public class RodLootTablePatch : IScriptMod {
                 yield return new IdentifierToken("TRAVELERS");
                 yield return new Token(TokenType.Newline, 2);
 
-                // "fishing_rod_collectors": equipped_rod = PlayerData.ROD.COLLECTORS
+
                 yield return new ConstantToken(new StringVariant("fishing_rod_collectors"));
                 yield return new Token(TokenType.Colon);
                 yield return new IdentifierToken("PlayerData");
@@ -108,7 +125,7 @@ public class RodLootTablePatch : IScriptMod {
                 yield return new IdentifierToken("COLLECTORS");
                 yield return new Token(TokenType.Newline, 2);
 
-                // "fishing_rod_collectors_shining": equipped_rod = PlayerData.ROD.SHINING
+
                 yield return new ConstantToken(new StringVariant("fishing_rod_collectors_shining"));
                 yield return new Token(TokenType.Colon);
                 yield return new IdentifierToken("PlayerData");
@@ -122,7 +139,7 @@ public class RodLootTablePatch : IScriptMod {
                 yield return new IdentifierToken("SHINING");
                 yield return new Token(TokenType.Newline, 2);
 
-                // "fishing_rod_collectors_opulent": equipped_rod = PlayerData.ROD.OPULENT
+
                 yield return new ConstantToken(new StringVariant("fishing_rod_collectors_opulent"));
                 yield return new Token(TokenType.Colon);
                 yield return new IdentifierToken("PlayerData");
@@ -136,7 +153,7 @@ public class RodLootTablePatch : IScriptMod {
                 yield return new IdentifierToken("OPULENT");
                 yield return new Token(TokenType.Newline, 2);
 
-                // "fishing_rod_collectors_glistening": equipped_rod = PlayerData.ROD.GLISTENING
+
                 yield return new ConstantToken(new StringVariant("fishing_rod_collectors_glistening"));
                 yield return new Token(TokenType.Colon);
                 yield return new IdentifierToken("PlayerData");
@@ -150,7 +167,7 @@ public class RodLootTablePatch : IScriptMod {
                 yield return new IdentifierToken("GLISTENING");
                 yield return new Token(TokenType.Newline, 2);
 
-                // "fishing_rod_collectors_radiant": equipped_rod = PlayerData.ROD.RADIANT
+
                 yield return new ConstantToken(new StringVariant("fishing_rod_collectors_radiant"));
                 yield return new Token(TokenType.Colon);
                 yield return new IdentifierToken("PlayerData");
@@ -164,7 +181,7 @@ public class RodLootTablePatch : IScriptMod {
                 yield return new IdentifierToken("RADIANT");
                 yield return new Token(TokenType.Newline, 2);
 
-                // "fishing_rod_collectors_alpha": equipped_rod = PlayerData.ROD.ALPHA
+
                 yield return new ConstantToken(new StringVariant("fishing_rod_collectors_alpha"));
                 yield return new Token(TokenType.Colon);
                 yield return new IdentifierToken("PlayerData");
@@ -178,7 +195,7 @@ public class RodLootTablePatch : IScriptMod {
                 yield return new IdentifierToken("ALPHA");
                 yield return new Token(TokenType.Newline, 2);
 
-                // "fishing_rod_prosperous": equipped_rod = PlayerData.ROD.PROSPEROUS
+
                 yield return new ConstantToken(new StringVariant("fishing_rod_prosperous"));
                 yield return new Token(TokenType.Colon);
                 yield return new IdentifierToken("PlayerData");
@@ -192,7 +209,7 @@ public class RodLootTablePatch : IScriptMod {
                 yield return new IdentifierToken("PROSPEROUS");
                 yield return new Token(TokenType.Newline, 2);
 
-                // "fishing_rod_skeleton": equipped_rod = PlayerData.ROD.SPECTRAL
+
                 yield return new ConstantToken(new StringVariant("fishing_rod_skeleton"));
                 yield return new Token(TokenType.Colon);
                 yield return new IdentifierToken("PlayerData");
@@ -206,7 +223,7 @@ public class RodLootTablePatch : IScriptMod {
                 yield return new IdentifierToken("SPECTRAL");
                 yield return new Token(TokenType.Newline, 1);
 
-                // print("Equipped Rod: ", PlayerData.equipped_rod)
+
                 yield return new Token(TokenType.BuiltInFunc, (uint?)BuiltinFunction.TextPrint);
                 yield return new Token(TokenType.ParenthesisOpen);
                 yield return new ConstantToken(new StringVariant("Equipped Rod: "));
@@ -217,10 +234,21 @@ public class RodLootTablePatch : IScriptMod {
                 yield return new Token(TokenType.ParenthesisClose);
                 yield return new Token(TokenType.Newline, 1);
 
+            } else if (treasureWaiter.Check(token)) {
+                // var stored_fish_type = fish_type
+                yield return token;
+
+                yield return new Token(TokenType.Newline, 1);
+                yield return new Token(TokenType.PrVar);
+                yield return new IdentifierToken("stored_fish_type");
+                yield return new Token(TokenType.OpAssign);
+                yield return new IdentifierToken("fish_type");
+
+
             } else if (fishTypeWaiter.Check(token)) {
                 // var ap = get_node("/root/mwmwArchipelago")
                 // if ap.Config.mode == ap.Config.Gamemode.ALT:
-                //   var zone = fish_type
+                //   var zone = stored_fish_type
                 //   var table = "trash"
                 //   match PlayerData.equipped_rod:
                 //     PlayerData.ROD.SIMPLE: table = "trash"
@@ -281,7 +309,7 @@ public class RodLootTablePatch : IScriptMod {
                 yield return new Token(TokenType.PrVar);
                 yield return new IdentifierToken("zone");
                 yield return new Token(TokenType.OpAssign);
-                yield return new IdentifierToken("fish_type");
+                yield return new IdentifierToken("stored_fish_type");
 
                 yield return new Token(TokenType.Newline, 2);
                 yield return new Token(TokenType.PrVar);

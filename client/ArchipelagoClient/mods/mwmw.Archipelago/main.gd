@@ -176,49 +176,49 @@ func send_quest_check(goal_id, tier, action):
 			if tier < scqh_count:
 				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 5 + tier])
 		"fish_ocean_manta_ray":
-			if tier < scqn_count:
+			if tier < scqh_count:
 				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 6 + tier])
 		"fish_lake_gar":
-			if tier < scqn_count:
+			if tier < scqh_count:
 				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 7 + tier])
 		"fish_ocean_sawfish":
-			if tier < scqn_count:
+			if tier < scqh_count:
 				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 8 + tier])
 		"fish_lake_muskellunge":
-			if tier < scqn_count:
+			if tier < scqh_count:
 				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 9 + tier])
 		"fish_lake_axolotl":
-			if tier < scqn_count:
+			if tier < scqh_count:
 				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 10 + tier])
 		"fish_lake_pupfish":
-			if tier < scqn_count:
+			if tier < scqh_count:
 				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 11 + tier])
 		"fish_lake_mooneye":
-			if tier < scqn_count:
+			if tier < scqh_count:
 				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 12 + tier])
 		"fish_ocean_greatwhiteshark":
-			if tier < scqn_count:
+			if tier < scqh_count:
 				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 13 + tier])
 		"fish_ocean_whale":
-			if tier < scqn_count:
+			if tier < scqh_count:
 				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 14 + tier])
 		"fish_ocean_coalacanth":
-			if tier < scqn_count:
+			if tier < scqh_count:
 				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 15 + tier])
 		"fish_lake_alligator":
-			if tier < scqn_count:
+			if tier < scqh_count:
 				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 16 + tier])
 		"fish_lake_kingsalmon":
-			if tier < scqn_count:
+			if tier < scqh_count:
 				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 17 + tier])
 		"fish_ocean_manowar":
-			if tier < scqn_count:
+			if tier < scqh_count:
 				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 18 + tier])
 		"fish_ocean_sea_turtle":
-			if tier < scqn_count:
+			if tier < scqh_count:
 				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 19 + tier])
 		"fish_ocean_squid":
-			if tier < scqn_count:
+			if tier < scqh_count:
 				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 20 + tier])
 		_:
 			out("Unrecognised fish id: " + goal_id + ". Couldn't send check!")
@@ -423,7 +423,7 @@ func _on_connected(slot_data):
 	
 	NetworkManager.request_location_hints(Config.SHOP_ID.values())
 	unlocked_level = NetworkManager.get_item_count(94043)
-	out(unlocked_level)
+	out("unlocked_level: " + unlocked_level)
 
 
 func _adjust_fish_weights():

@@ -92,7 +92,8 @@ func send_packet(packet):
 
 func get_item_count(id):
 	var sum = 0
-	for item in inventory:
+	for item in inventory.items:
+		print(item)
 		if int(item.item) == id:
 			sum += 1
 	return sum
