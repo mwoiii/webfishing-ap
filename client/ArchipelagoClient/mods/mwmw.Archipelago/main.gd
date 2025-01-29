@@ -169,7 +169,7 @@ func send_quest_check(goal_id, tier, action):
 		"fish_rain_leedsichthys":
 			if tier < scqh_count:
 				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 3 + tier])
-		"fish_rain_golden_bass":
+		"fish_lake_golden_bass":
 			if tier < scqh_count:
 				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 4 + tier])
 		"fish_rain_bullshark":
