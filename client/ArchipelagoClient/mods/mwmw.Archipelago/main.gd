@@ -485,7 +485,7 @@ func _on_network_message(msg_data):
 			text_coloured += Config.TEXT_COLOUR + part.text + "[/color]"
 	
 	out(text)
-	Network._update_chat(text_coloured, true)
+	Network._update_chat(text_coloured, "ap")
 
 
 func _on_received_item(item):

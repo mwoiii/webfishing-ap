@@ -7,23 +7,23 @@ namespace mwmw.Archipelago {
         public bool ShouldRun(string path) => path == "res://Scenes/HUD/playerhud.gdc";
 
         public IEnumerable<Token> Modify(string path, IEnumerable<Token> tokens) {
-            // Input.is_action_just_pressed("interact")
+            // _exit_chat()
+            //
+            // if not using_chat
             var inputWaiter = new MultiTokenWaiter([
-                t => t.Type is TokenType.CfIf,
-                t => t is IdentifierToken{Name:"Input"},
-                t => t.Type is TokenType.Period,
-                t => t is IdentifierToken{Name:"is_action_just_pressed"},
+                t => t is IdentifierToken{Name:"_exit_chat"},
                 t => t.Type is TokenType.ParenthesisOpen,
-                t => t is ConstantToken{Value: StringVariant{Value: "interact"}},
-                t => t.Type is TokenType.ParenthesisClose
+                t => t.Type is TokenType.ParenthesisClose,
+                t => t.Type is TokenType.Newline,
+                t => t.Type is TokenType.Newline,
+                t => t.Type is TokenType.CfIf,
         ], allowPartialMatch: false);
 
             foreach (var token in tokens) {
                 if (inputWaiter.Check(token)) {
-                    // ...and not get_node("/root/mwmwArchipelago").Menu.visible (:)
+                    // ... not get_node("/root/mwmwArchipelago").Menu.visible and... 
                     yield return token;
 
-                    yield return new Token(TokenType.OpAnd);
                     yield return new Token(TokenType.OpNot);
                     yield return new IdentifierToken("get_node");
                     yield return new Token(TokenType.ParenthesisOpen);
@@ -33,6 +33,7 @@ namespace mwmw.Archipelago {
                     yield return new IdentifierToken("Menu");
                     yield return new Token(TokenType.Period);
                     yield return new IdentifierToken("visible");
+                    yield return new Token(TokenType.OpAnd);
 
                 } else {
                     yield return token;

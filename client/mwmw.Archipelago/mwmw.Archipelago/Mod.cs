@@ -15,6 +15,7 @@ public class Mod : IMod {
         modInterface.RegisterScriptMod(new QuestCheck());
         modInterface.RegisterScriptMod(new SpectralCheck());
         modInterface.RegisterScriptMod(new APMsg());
+        modInterface.RegisterScriptMod(new UntagAPMsg());
         modInterface.RegisterScriptMod(new InteractIntercept());
         modInterface.RegisterScriptMod(new HideMenu());
         modInterface.RegisterScriptMod(new LockButtons());
