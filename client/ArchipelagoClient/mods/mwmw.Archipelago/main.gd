@@ -172,7 +172,7 @@ func send_quest_check(goal_id, tier, action):
 		"fish_lake_golden_bass":
 			if tier < scqh_count:
 				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 4 + tier])
-		"fish_rain_bullshark":
+		"fish_lake_bullshark":
 			if tier < scqh_count:
 				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 5 + tier])
 		"fish_ocean_manta_ray":
@@ -361,7 +361,7 @@ func _generate_alt_loot_tables():
 func _set_alt_bait_weights():
 	get_node("/root/world/Viewport/main/entities/player").BAIT_DATA = {
 		"": {"catch": 0.0, "max_tier": 0, "quality": []},
-		"worms": {"catch": 0.06, "max_tier": 1, "quality": [1.0]},
+		"worms": {"catch": 0.06, "max_tier": 2, "quality": [1.0]},
 		"cricket": {"catch": 0.06, "max_tier": 2, "quality": [0.0, 1.0]},
 		"leech": {"catch": 0.06, "max_tier": 2, "quality": [0.0, 0.0, 1.0]},
 		"minnow": {"catch": 0.06, "max_tier": 2, "quality": [0.0, 0.0, 0.0, 1.0]},
