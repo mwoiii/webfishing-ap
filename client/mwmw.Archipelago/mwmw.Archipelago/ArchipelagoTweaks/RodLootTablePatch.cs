@@ -250,6 +250,7 @@ public class RodLootTablePatch : IScriptMod {
                 // if ap.Config.mode == ap.Config.Gamemode.ALT:
                 //   var zone = stored_fish_type
                 //   var table = "trash"
+                //   max_tier = BAIT_DATA[casted_bait]["max_tier"]
                 //   match PlayerData.equipped_rod:
                 //     PlayerData.ROD.SIMPLE: table = "trash"
                 //     PlayerData.ROD.TRAVELERS: table = "travelers"
@@ -316,6 +317,17 @@ public class RodLootTablePatch : IScriptMod {
                 yield return new IdentifierToken("table");
                 yield return new Token(TokenType.OpAssign);
                 yield return new ConstantToken(new StringVariant("trash"));
+
+                yield return new Token(TokenType.Newline, 2);
+                yield return new IdentifierToken("max_tier");
+                yield return new Token(TokenType.OpAssign);
+                yield return new IdentifierToken("BAIT_DATA");
+                yield return new Token(TokenType.BracketOpen);
+                yield return new IdentifierToken("casted_bait");
+                yield return new Token(TokenType.BracketClose);
+                yield return new Token(TokenType.BracketOpen);
+                yield return new ConstantToken(new StringVariant("max_tier"));
+                yield return new Token(TokenType.BracketClose);
 
                 yield return new Token(TokenType.Newline, 2);
                 yield return new Token(TokenType.CfMatch);
