@@ -3,7 +3,8 @@ from typing import Dict, Any
 from .options import WebfishingOptions
 from .items import (WebfishingItem, WebfishingItemData, item_table, fixed_quantities, filler_weights)
 from .locations import (WebfishingAdvancement, base, medium, hard, hard_specific, camp_2, camp_3, camp_4,
-                        all_advancements)
+                        all_advancements, quests_1_group, quests_2_group,
+                        shop_1_group, shop_2_group, shop_3_group, camp_shop_group, spectral_group)
 from worlds.AutoWorld import World
 from worlds.generic.Rules import set_rule
 from BaseClasses import Region, Item
@@ -24,6 +25,16 @@ class WebfishingWorld(World):
     # include events, but don't have to since events will be placed manually.
     item_name_to_id = {name: data.code for name, data in item_table.items()}
     location_name_to_id = {name: data.id for name, data in all_advancements.items()}
+
+    location_name_groups = {
+        "Initial Quests": quests_1_group,
+        "Extra Quests": quests_2_group,
+        "Cheap Shop Items": shop_1_group,
+        "Moderate Shop Items": shop_2_group,
+        "Expensive Shop Items": shop_3_group,
+        "Camp Shop Items": camp_shop_group,
+        "Spectral Bones": spectral_group,
+    }
 
     def create_regions(self) -> None:
         menu_region = Region("Menu", self.player, self.multiworld)
