@@ -275,7 +275,7 @@ public class RodLootTablePatch : IScriptMod {
                 //   force_av_size = false
                 //   if table == "trash": force_av_size = true
                 //   if in_rain and table == "prosperous":
-                //     able = str(table, "_", "rain")
+                //     table = str(table, "_", "rain")
                 //   fish_type = str(zone, "_", table)
                 //   print(fish_type)
                 yield return token;

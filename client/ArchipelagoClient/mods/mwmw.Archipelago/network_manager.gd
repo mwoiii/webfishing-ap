@@ -63,21 +63,27 @@ func say(msg):
 	send_packet('[{"cmd": "Say", "text": "' + msg + '"}]')
 
 
-func send_checks(loc_ids: Array):
+func send_checks(loc_ids: Array):	
 	for id in loc_ids:
 		id = float(id)
 		if not checked_locations.has(id):
 			checked_locations.append(id)
-
+	
 	var ids_string = JSON.print(loc_ids)
 	_out("Attempting to send checks: " + ids_string)
 	send_packet('[{"cmd": "LocationChecks", "locations": ' + ids_string + '}]')
 
 
-func request_location_hints(loc_ids):
+func request_location_hints(loc_ids, auto_hint):
 	var ids_string = JSON.print(loc_ids)
+	
+	if auto_hint:
+		auto_hint = 2
+	else:
+		auto_hint = 0
+		
 	_out("Attempting to request hints for: " + ids_string)
-	send_packet('[{"cmd": "LocationScouts", "locations": ' + ids_string + ', "create_as_hint": 2}]')
+	send_packet('[{"cmd": "LocationScouts", "locations": ' + ids_string + ', "create_as_hint": ' + str(auto_hint) + '}]')
 
 
 func send_victory():
@@ -93,7 +99,6 @@ func send_packet(packet):
 func get_item_count(id):
 	var sum = 0
 	for item in inventory.items:
-		print(item)
 		if int(item.item) == id:
 			sum += 1
 	return sum
@@ -194,7 +199,6 @@ func _on_data_received():
 			send_packet('[{"cmd": "Sync"}]')
 			inventory = FileManager.get_inventory()
 			players = obj.players
-			checked_locations = obj.checked_locations
 			
 			var slot_data
 			if obj.has("slot_data"):

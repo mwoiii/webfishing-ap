@@ -24,6 +24,7 @@ func _ready():
 	get_tree().connect("node_added", self, "_on_node_added")
 	get_tree().connect("node_removed", self, "_on_node_removed")
 	UserSave.connect("_slot_saved", self, "_on_slot_saved")
+	PlayerData.connect("_save_reset", self, "_on_save_reset")
 	NetworkManager.connect("status_changed", self, "_on_status_changed")
 	NetworkManager.connect("network_message", self, "_on_network_message")
 	NetworkManager.connect("received_item", self, "_on_received_item")
@@ -42,6 +43,7 @@ func connect_to_server(url, port, slot_name, password):
 	if NetworkManager.inventory != null:
 		FileManager.save_inventory(NetworkManager.inventory)
 	NetworkManager.connect_to_server(url, port, slot_name, password, "WEBFISHING")
+
 
 func send_victory():
 	NetworkManager.send_victory()
@@ -73,155 +75,205 @@ func send_item_check(item_id):
 			NetworkManager.send_checks([offset + 4])
 
 
-func send_quest_check(goal_id, tier, action):
+func send_quest_check(goal_id, tier, action):	
 	# Tier starts at 0, i.e. tier 0 means first quest completion	
-	# gcq: generic catch quest
-	# scqn: specifc catch quest (normal)
-	# scqh: specific catch quest (hard)
-	#
-	# all these quests are sequential so this is easier?
+	# gcqe: generic catch quest - easy
+	# gcqh: generic catch quest - hard (merged with normal ig)
+	# scqn: specific catch quest - normal
+	# scqh: specific catch quest - hard
+
 	var offset = 94200
-	var gcq_count = 5
-	var scqn_offset = gcq_count * 7
+	
+	var gcqe_count = 3
+	var gcqh_count = 2
 	var scqn_count = 2
-	var scqh_offset = scqn_offset + scqn_count * 13
 	var scqh_count = 1
+	
+	# multiplier must be equal to the number of fish in the previous grouping
+	# this looks like a negative cook but it's been too long for me to care
+	var gcqh_offset = offset + gcqe_count * 2
+	var scqn_offset = gcqh_offset + gcqh_count * 5
+	var scqh_offset = scqn_offset + scqn_count * 13
+	
 	
 	match action:
 		"catch_small", "catch_big", "catch_treasure", "catch_rain", "catch_hightier":
 			goal_id = action
 	
 	match goal_id:
-		# GENERIC CATCH QUESTS
+		# GENERIC CATCH QUESTS (EASY)
 		"lake":
-			if tier < gcq_count:
+			if tier < gcqe_count:
 				NetworkManager.send_checks([offset + tier])
 		"ocean":
-			if tier < gcq_count:
-				NetworkManager.send_checks([offset + gcq_count + tier])
+			if tier < gcqe_count:
+				NetworkManager.send_checks([offset + gcqe_count + tier])
+		
+		# GENERIC CATCH QUESTS (HARD)
 		"catch_small":
-			if tier < gcq_count:
-				NetworkManager.send_checks([offset + gcq_count * 2 + tier])
+			if tier < gcqh_count:
+				NetworkManager.send_checks([gcqh_offset+ tier])
 		"catch_big":
-			if tier < gcq_count:
-				NetworkManager.send_checks([offset + gcq_count * 3 + tier])
+			if tier < gcqh_count:
+				NetworkManager.send_checks([gcqh_offset + gcqh_count + tier])
 		"catch_treasure":
-			if tier < gcq_count:
-				NetworkManager.send_checks([offset + gcq_count * 4 + tier])
+			if tier < gcqh_count:
+				NetworkManager.send_checks([gcqh_offset + gcqh_count * 2 + tier])
 		"catch_rain":
-			if tier < gcq_count:
-				NetworkManager.send_checks([offset + gcq_count * 5 + tier])
+			if tier < gcqh_count:
+				NetworkManager.send_checks([gcqh_offset + gcqh_count * 3 + tier])
 		"catch_hightier":
-			if tier < gcq_count:
-				NetworkManager.send_checks([offset + gcq_count * 6 + tier])
+			if tier < gcqh_count:
+				NetworkManager.send_checks([gcqh_offset + gcqh_count * 4 + tier])
 				
 		# SPECIFIC CATCH QUESTS (NORMAL)
 		"fish_lake_sturgeon":
 			if tier < scqn_count:
-				NetworkManager.send_checks([offset + scqn_offset + tier])
+				NetworkManager.send_checks([scqn_offset + tier])
 		"fish_lake_catfish":
 			if tier < scqn_count:
-				NetworkManager.send_checks([offset + scqn_offset + scqn_count + tier])
+				NetworkManager.send_checks([scqn_offset + scqn_count + tier])
 		"fish_lake_koi":
 			if tier < scqn_count:
-				NetworkManager.send_checks([offset + scqn_offset + scqn_count * 2 + tier])
+				NetworkManager.send_checks([scqn_offset + scqn_count * 2 + tier])
 		"fish_lake_frog":
 			if tier < scqn_count:
-				NetworkManager.send_checks([offset + scqn_offset + scqn_count * 3 + tier])
+				NetworkManager.send_checks([scqn_offset + scqn_count * 3 + tier])
 		"fish_lake_turtle":
 			if tier < scqn_count:
-				NetworkManager.send_checks([offset + scqn_offset + scqn_count * 4 + tier])
+				NetworkManager.send_checks([scqn_offset + scqn_count * 4 + tier])
 		"fish_lake_toad":
 			if tier < scqn_count:
-				NetworkManager.send_checks([offset + scqn_offset + scqn_count * 5 + tier])
+				NetworkManager.send_checks([scqn_offset + scqn_count * 5 + tier])
 		"fish_lake_leech":
 			if tier < scqn_count:
-				NetworkManager.send_checks([offset + scqn_offset + scqn_count * 6 + tier])
+				NetworkManager.send_checks([scqn_offset + scqn_count * 6 + tier])
 		"fish_ocean_eel":
 			if tier < scqn_count:
-				NetworkManager.send_checks([offset + scqn_offset + scqn_count * 7 + tier])
+				NetworkManager.send_checks([scqn_offset + scqn_count * 7 + tier])
 		"fish_ocean_swordfish":
 			if tier < scqn_count:
-				NetworkManager.send_checks([offset + scqn_offset + scqn_count * 8 + tier])
+				NetworkManager.send_checks([scqn_offset + scqn_count * 8 + tier])
 		"fish_ocean_hammerhead_shark":
 			if tier < scqn_count:
-				NetworkManager.send_checks([offset + scqn_offset + scqn_count * 9 + tier])
+				NetworkManager.send_checks([scqn_offset + scqn_count * 9 + tier])
 		"fish_ocean_octopus":
 			if tier < scqn_count:
-				NetworkManager.send_checks([offset + scqn_offset + scqn_count * 10 + tier])
+				NetworkManager.send_checks([scqn_offset + scqn_count * 10 + tier])
 		"fish_ocean_seahorse":
 			if tier < scqn_count:
-				NetworkManager.send_checks([offset + scqn_offset + scqn_count * 11 + tier])
+				NetworkManager.send_checks([scqn_offset + scqn_count * 11 + tier])
 		"fish_void_voidfish":
 			if tier < scqn_count:
-				NetworkManager.send_checks([offset + scqn_offset + scqn_count * 12 + tier])
+				NetworkManager.send_checks([scqn_offset + scqn_count * 12 + tier])
 		
 		# SPECIFIC CATCH QUESTS (HARD)
 		"fish_ocean_golden_manta_ray":
 			if tier < scqh_count:
-				NetworkManager.send_checks([offset + scqh_offset + tier])
+				NetworkManager.send_checks([scqh_offset + tier])
 		"fish_alien_dog":
 			if tier < scqh_count:
-				NetworkManager.send_checks([offset + scqh_offset + scqh_count + tier])
+				NetworkManager.send_checks([scqh_offset + scqh_count + tier])
 		"fish_rain_heliocoprion":
 			if tier < scqh_count:
-				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 2 + tier])
+				NetworkManager.send_checks([scqh_offset + scqh_count * 2 + tier])
 		"fish_rain_leedsichthys":
 			if tier < scqh_count:
-				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 3 + tier])
+				NetworkManager.send_checks([scqh_offset + scqh_count * 3 + tier])
 		"fish_lake_golden_bass":
 			if tier < scqh_count:
-				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 4 + tier])
+				NetworkManager.send_checks([scqh_offset + scqh_count * 4 + tier])
 		"fish_lake_bullshark":
 			if tier < scqh_count:
-				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 5 + tier])
+				NetworkManager.send_checks([scqh_offset + scqh_count * 5 + tier])
 		"fish_ocean_manta_ray":
 			if tier < scqh_count:
-				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 6 + tier])
+				NetworkManager.send_checks([scqh_offset + scqh_count * 6 + tier])
 		"fish_lake_gar":
 			if tier < scqh_count:
-				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 7 + tier])
+				NetworkManager.send_checks([scqh_offset + scqh_count * 7 + tier])
 		"fish_ocean_sawfish":
 			if tier < scqh_count:
-				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 8 + tier])
+				NetworkManager.send_checks([scqh_offset + scqh_count * 8 + tier])
 		"fish_lake_muskellunge":
 			if tier < scqh_count:
-				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 9 + tier])
+				NetworkManager.send_checks([scqh_offset + scqh_count * 9 + tier])
 		"fish_lake_axolotl":
 			if tier < scqh_count:
-				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 10 + tier])
+				NetworkManager.send_checks([scqh_offset + scqh_count * 10 + tier])
 		"fish_lake_pupfish":
 			if tier < scqh_count:
-				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 11 + tier])
+				NetworkManager.send_checks([scqh_offset + scqh_count * 11 + tier])
 		"fish_lake_mooneye":
 			if tier < scqh_count:
-				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 12 + tier])
+				NetworkManager.send_checks([scqh_offset + scqh_count * 12 + tier])
 		"fish_ocean_greatwhiteshark":
 			if tier < scqh_count:
-				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 13 + tier])
+				NetworkManager.send_checks([scqh_offset + scqh_count * 13 + tier])
 		"fish_ocean_whale":
 			if tier < scqh_count:
-				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 14 + tier])
+				NetworkManager.send_checks([scqh_offset + scqh_count * 14 + tier])
 		"fish_ocean_coalacanth":
 			if tier < scqh_count:
-				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 15 + tier])
+				NetworkManager.send_checks([scqh_offset + scqh_count * 15 + tier])
 		"fish_lake_alligator":
 			if tier < scqh_count:
-				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 16 + tier])
+				NetworkManager.send_checks([scqh_offset + scqh_count * 16 + tier])
 		"fish_lake_kingsalmon":
 			if tier < scqh_count:
-				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 17 + tier])
+				NetworkManager.send_checks([scqh_offset + scqh_count * 17 + tier])
 		"fish_ocean_manowar":
 			if tier < scqh_count:
-				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 18 + tier])
+				NetworkManager.send_checks([scqh_offset + scqh_count * 18 + tier])
 		"fish_ocean_sea_turtle":
 			if tier < scqh_count:
-				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 19 + tier])
+				NetworkManager.send_checks([scqh_offset + scqh_count * 19 + tier])
 		"fish_ocean_squid":
 			if tier < scqh_count:
-				NetworkManager.send_checks([offset + scqh_offset + scqh_count * 20 + tier])
+				NetworkManager.send_checks([scqh_offset + scqh_count * 20 + tier])
 		_:
 			out("Unrecognised fish id: " + goal_id + ". Couldn't send check!")
+
+
+const inactive = "[color=#d57272]Archipelago is currently inactive![/color]"
+func command(cmd):	
+	match cmd:
+		"/help":
+			Network._update_chat(Config.TEXT_COLOUR + 
+			"/help: View this command panel.\n" +
+			"/completion: Return your current percentage total journal completion.\n" +
+			"/goal: Return information relating to your currently configured goal condition.\n" + 
+			"/mode: Return your currently configured game mode." + "[/color]", "ap")
+		"/completion":
+			var percent = _get_journal_completion()
+			Network._update_chat(Config.TEXT_COLOUR + 
+			"You have completed " + str(percent) + "% of the journal." + "[/color]", "ap")
+		"/goal":
+			if Config.current_goal == null:
+				Network._update_chat(inactive, "ap")
+				return
+			var goal_info = "unknown."
+			match int(Config.current_goal):
+				Config.Goal.TOTAL_COMPLETION:
+					goal_info = "Total Completion. Your configured completion percentage is " + str(Config.total_completion_goal) + "%."
+				Config.Goal.RANK:
+					goal_info = "Rank. Your configured completion rank is " + str(Config.rank_goal) + "."
+				Config.Goal.COMPLETED_CAMP:
+					goal_info = "Completed Camp."
+			Network._update_chat(Config.TEXT_COLOUR + 
+			"Your current goal is " + goal_info + "[/color]", "ap")
+		"/mode":
+			if Config.current_goal == null:
+				Network._update_chat(inactive, "ap")
+				return
+			var mode = "unknown."
+			match int(Config.mode):
+				Config.Gamemode.CLASSIC:
+					mode = "Classic."
+				Config.Gamemode.ALT:
+					mode = "Harmonized."
+			Network._update_chat(Config.TEXT_COLOUR + 
+			"Your current mode is " + mode + "[/color]", "ap")
 
 
 func get_connection_cache():
@@ -239,7 +291,7 @@ func get_shop_hint(item_id):
 func out(text):
 	print("APMain: " + str(text))
 
-
+"""
 func _generate_general_shop(shop_node):
 	var button_script = load("res://mods/mwmw.Archipelago/scenes/ap_shop_button.gd")
 	var category = shop_node.get_node("instruments").duplicate()
@@ -277,7 +329,7 @@ func _generate_general_shop(shop_node):
 			category.add_child(expensive_button)
 	
 	shop_node.add_child(category)
-
+"""
 
 func _generate_progression_shop(shop_node):
 	var button_script = load("res://mods/mwmw.Archipelago/scenes/ap_shop_button.gd")
@@ -289,23 +341,61 @@ func _generate_progression_shop(shop_node):
 	for child in category.get_children():
 		child.queue_free()
 	
-	var costs = [100, 1000, 2500, 5000]
-	var icons = [preload("res://icon.png"), preload("res://icon_bronze.png"), 
-				preload("res://icon_silver.png"), preload("res://icon_gold.png")]
-	
-	for i in range(4):
+	for i in range(32):
 		var progression_button = button.duplicate()
-		progression_button.cost = costs[i]
-		progression_button.icon = icons[i]
-		progression_button.item_id = "progression_" + str(i + 1)
-		progression_button.slot_name = "Archipelago Progression Check"
-		progression_button.slot_desc = "Help someone out!"
-		if i > 0:
-			progression_button.loan_level_require = i
+		if i + 1 <= 8:
+			progression_button.cost = 50
+			progression_button.icon = preload("res://icon.png")
+			progression_button.item_id = "t1_" + str(i + 1)
+			progression_button.slot_name = "Archipelago Progression Check"
+			progression_button.slot_desc = "Help someone out!"
+		elif i + 1 <= 16:
+			progression_button.cost = 500
+			progression_button.icon = preload("res://icon_bronze.png")
+			progression_button.item_id = "t2_" + str(i + 1)
+			progression_button.slot_name = "Archipelago Progression Check"
+			progression_button.slot_desc = "Help someone out!"
+			progression_button.loan_level_require = 1
+		elif i + 1 <= 24:
+			progression_button.cost = 1000
+			progression_button.icon = preload("res://icon_silver.png")
+			progression_button.item_id = "t3_" + str(i + 1)
+			progression_button.slot_name = "Archipelago Progression Check"
+			progression_button.slot_desc = "Help someone out!"
+			progression_button.loan_level_require = 2
+		elif i + 1 <= 32:
+			progression_button.cost = 2500
+			progression_button.icon = preload("res://icon_gold.png")
+			progression_button.item_id = "t4_" + str(i + 1)
+			progression_button.slot_name = "Archipelago Progression Check"
+			progression_button.slot_desc = "Help someone out!"
+			progression_button.loan_level_require = 3
+
 		category.add_child(progression_button)
 	
 	shop_node.add_child(category)
 
+
+func _generate_spectral_shop(shop_node):
+	var button_script = load("res://mods/mwmw.Archipelago/scenes/ap_shop_button.gd")
+	var category = shop_node.get_node("spectral").duplicate()
+	category.category_title = "archipelago"
+	var button = category.get_child(0).duplicate()
+	button.set_script(button_script)
+	
+	for child in category.get_children():
+		child.queue_free()
+	
+	for i in range(4):
+		var spectral_button = button.duplicate()
+		spectral_button.cost = 50
+		spectral_button.item_id = "s_" + str(i + 1)
+		spectral_button.slot_name = "Archipelago Spectral Check"
+		spectral_button.slot_desc = "Help someone out!"
+		spectral_button.icon = preload("res://icon_bronze.png")
+		category.add_child(spectral_button)
+		
+	shop_node.add_child(category)
 
 
 func _generate_alt_loot_tables():
@@ -373,10 +463,19 @@ func _set_alt_bait_weights():
 
 func _on_slot_saved():
 	FileManager.save_inventory(NetworkManager.inventory)
+	FileManager.save_locations(NetworkManager.checked_locations)
+
+
+func _on_save_reset():
+	out("Resetting location data for slot " + str(UserSave.current_loaded_slot))
+	FileManager.reset_locations(UserSave.current_loaded_slot)
 
 
 func _on_node_added(node):
+	# on loading into a game
 	if node.filename == "res://Scenes/HUD/Esc Menu/esc_menu.tscn":
+		
+		# adding in the menus
 		var btn_resource = preload("res://mods/mwmw.Archipelago/scenes/ap_button.tscn")
 		var menu_resource = preload("res://mods/mwmw.Archipelago/scenes/ap_connect_menu.tscn")
 		Btn = btn_resource.instance()
@@ -384,17 +483,27 @@ func _on_node_added(node):
 		status_label = Menu.get_node("Panel/Panel/VBoxContainer/connection_status")
 		node.add_child(Btn)
 		node.add_child(Menu)
-		
 		out("Added UI")
+		
+		# and retrieving checked locations if they exist
+		FileManager.locations_loc = "user://ap_data/slot" + str(UserSave.current_loaded_slot) + ".save"
+		NetworkManager.checked_locations = FileManager.get_locations()
+		if not NetworkManager.checked_locations:
+			NetworkManager.checked_locations = []
 	
-	elif node.filename == "res://Scenes/HUD/Shop/ShopSetups/general_shop.tscn" and Config.current_goal != null:
-		_generate_general_shop(node)
+	# removed in favour of more progression purchases to reduce sphere 1 checks
+	# elif node.filename == "res://Scenes/HUD/Shop/ShopSetups/general_shop.tscn" and Config.current_goal != null:
+	# 	_generate_general_shop(node)
 	
 	elif node.filename == "res://Scenes/HUD/Shop/ShopSetups/progression_shop.tscn" and Config.current_goal != null:
 		_generate_progression_shop(node)
+	
+	elif node.filename == "res://Scenes/HUD/Shop/ShopSetups/spectral_shop.tscn" and Config.current_goal != null:
+		_generate_spectral_shop(node)
 
 
 func _on_node_removed(node):
+	# on leaving a game session
 	if node.filename == "res://Scenes/HUD/Esc Menu/esc_menu.tscn":
 		NetworkManager.disconnect_from_server()
 		Config.current_goal = null
@@ -408,22 +517,51 @@ func _on_status_changed(status):
 
 
 func _on_connected(slot_data):
+	# initializing ap config data
 	PlayerData._send_notification("Connected to Archipelago!")
 	Config.current_goal = slot_data.goal
 	Config.total_completion_goal = slot_data.total_completion
 	Config.rank_goal = slot_data.rank
 	Config.mode = slot_data.game_mode
 	Config.chance_eq = float(slot_data.fish_chance_equalizer) / 100
+	Config.auto_hint = slot_data.auto_hint
 	
+	# adjusting game state based on config options
 	if Config.mode == Config.Gamemode.ALT:
 		_generate_alt_loot_tables()
 		_set_alt_bait_weights()
-	elif Config.chance_eq > 0:
+	
+	if Config.chance_eq > 0:
 		_adjust_fish_weights()
 	
-	NetworkManager.request_location_hints(Config.SHOP_ID.values())
+	NetworkManager.request_location_hints(Config.SHOP_ID.values(), Config.auto_hint)
 	unlocked_level = NetworkManager.get_item_count(94043)
 	out("unlocked_level: " + unlocked_level)
+	
+	_sync_state()
+
+
+func _sync_state():
+	# sending all stored locations
+	# and checking if victory has been met
+	
+	NetworkManager.send_checks(NetworkManager.checked_locations)
+	
+	if (Config.current_goal == Config.Goal.RANK and PlayerData.badge_level >= Config.rank_goal) \
+	or (Config.current_goal == Config.Goal.TOTAL_COMPLETION and _get_journal_completion() >= Config.total_completion_goal) \
+	or (Config.current_goal == Config.Goal.COMPLETED_CAMP and PlayerData.loan_level >= 3):
+		send_victory()
+
+
+func _get_journal_completion():
+	var total_count = 0.0
+	var caught_count = 0.0
+	for cat in PlayerData.journal_logs.keys():
+		for key in PlayerData.journal_logs[cat].keys():
+			var catch_data = PlayerData.journal_logs[cat][key]
+			total_count += PlayerData.ITEM_QUALITIES.size()
+			caught_count += catch_data["quality"].size()
+	return (caught_count / total_count) * 100
 
 
 func _adjust_fish_weights():
@@ -635,6 +773,30 @@ func _on_received_item(item):
 			name = "Spectral Femur"
 			item_id = "spectral_femur"
 			is_bone = true
+		"94049":
+			name = "Traveler's Rod"
+			item_id = "fishing_rod_travelers"
+		"94050":
+			name = "Collector's Rod"
+			item_id = "fishing_rod_collectors"
+		"94051":
+			name = "Shining Collector's Rod"
+			item_id = "fishing_rod_collectors_shining"
+		"94052":
+			name = "Glistening Collector's Rod"
+			item_id = "fishing_rod_collectors_glistening"
+		"94053":
+			name = "Opulent Collector's Rod"
+			item_id = "fishing_rod_collectors_opulent"
+		"94054":
+			name = "Radiant Collector's Rod"
+			item_id = "fishing_rod_collectors_radiant"
+		"94055":
+			name = "Alpha Collector's Rod"
+			item_id = "fishing_rod_collectors_alpha"
+		"94056":
+			name = "Prosperous Collector's Rod"
+			item_id = "fishing_rod_prosperous"
 	
 	if item_id:
 		name = Globals.item_data[item_id]["file"].item_name
@@ -654,6 +816,7 @@ func _on_received_item(item):
 
 func _on_connection_lost():
 	PlayerData._send_notification("Disconnected from Archipelago!")
+	Config.mode = null
 
 
 func _on_received_location_info(locations):

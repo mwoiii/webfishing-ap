@@ -19,7 +19,7 @@ item_table = {
     "Progressive Rod Luck": WebfishingItemData(offset + 3, ItemClassification.progression),
     "Progressive Tacklebox Upgrade": WebfishingItemData(offset + 4, ItemClassification.progression),
     "Progressive Bait": WebfishingItemData(offset + 5, ItemClassification.progression),
-    "Fly Hook": WebfishingItemData(offset + 6, ItemClassification.useful),
+    "Fly Hook": WebfishingItemData(offset + 6, ItemClassification.progression),
     "Patient Lure": WebfishingItemData(offset + 7, ItemClassification.useful),
     "Lucky Hook": WebfishingItemData(offset + 8, ItemClassification.useful),
     "Challenge Lure": WebfishingItemData(offset + 9, ItemClassification.useful),
@@ -27,13 +27,13 @@ item_table = {
     "Fresh Lure": WebfishingItemData(offset + 11, ItemClassification.useful),
     "Quick Jig": WebfishingItemData(offset + 12, ItemClassification.useful),
     "Efficient Lure": WebfishingItemData(offset + 13, ItemClassification.useful),
-    "Magnet Lure": WebfishingItemData(offset + 14, ItemClassification.useful),
-    "Large Lure": WebfishingItemData(offset + 15, ItemClassification.useful),
+    "Magnet Lure": WebfishingItemData(offset + 14, ItemClassification.progression),
+    "Large Lure": WebfishingItemData(offset + 15, ItemClassification.progression),
     "Attractive Angler": WebfishingItemData(offset + 16, ItemClassification.useful),
-    "Sparkling Lure": WebfishingItemData(offset + 17, ItemClassification.useful),
+    "Sparkling Lure": WebfishingItemData(offset + 17, ItemClassification.progression),
     "Double Hook": WebfishingItemData(offset + 18, ItemClassification.useful),
-    "Shower Lure": WebfishingItemData(offset + 19, ItemClassification.useful),
-    "Golden Hook": WebfishingItemData(offset + 20, ItemClassification.useful),
+    "Shower Lure": WebfishingItemData(offset + 19, ItemClassification.progression),
+    "Golden Hook": WebfishingItemData(offset + 20, ItemClassification.progression),
     "Progressive Buddy Quality Upgrade": WebfishingItemData(offset + 21, ItemClassification.progression),
     "Progressive Buddy Speed Upgrade": WebfishingItemData(offset + 22, ItemClassification.progression),
     "Treasure Chest": WebfishingItemData(offset + 23, ItemClassification.filler),
@@ -57,14 +57,22 @@ item_table = {
     "Money ($1000)": WebfishingItemData(offset + 41, ItemClassification.useful),
     "Money ($5000)": WebfishingItemData(offset + 42, ItemClassification.useful),
     "Progressive Camp Tier Unlock": WebfishingItemData(offset + 43, ItemClassification.progression),
-    "Spectral Rib": WebfishingItemData(offset + 44, ItemClassification.filler),
-    "Spectral Skull": WebfishingItemData(offset + 45, ItemClassification.filler),
-    "Spectral Spine": WebfishingItemData(offset + 46, ItemClassification.filler),
-    "Spectral Humerus": WebfishingItemData(offset + 47, ItemClassification.filler),
-    "Spectral Femur": WebfishingItemData(offset + 48, ItemClassification.filler),
-
+    "Spectral Rib": WebfishingItemData(offset + 44, ItemClassification.progression),
+    "Spectral Skull": WebfishingItemData(offset + 45, ItemClassification.progression),
+    "Spectral Spine": WebfishingItemData(offset + 46, ItemClassification.progression),
+    "Spectral Humerus": WebfishingItemData(offset + 47, ItemClassification.progression),
+    "Spectral Femur": WebfishingItemData(offset + 48, ItemClassification.progression),
+    "Traveler's Rod": WebfishingItemData(offset + 49, ItemClassification.progression),
+    "Collector's Rod": WebfishingItemData(offset + 50, ItemClassification.progression),
+    "Shining Collector's Rod": WebfishingItemData(offset + 51, ItemClassification.progression),
+    "Glistening Collector's Rod": WebfishingItemData(offset + 52, ItemClassification.progression),
+    "Opulent Collector's Rod": WebfishingItemData(offset + 53, ItemClassification.progression),
+    "Radiant Collector's Rod": WebfishingItemData(offset + 54, ItemClassification.progression),
+    "Alpha Collector's Rod": WebfishingItemData(offset + 55, ItemClassification.progression),
+    "Prosperous Rod": WebfishingItemData(offset + 56, ItemClassification.progression),
 }
 
+# 73 guaranteed items (and hence min no. locations)
 fixed_quantities = {
     "Progressive Rod Power": 8,
     "Progressive Rod Speed": 5,
@@ -92,6 +100,22 @@ fixed_quantities = {
     "Money ($1000)": 5,
     "Money ($5000)": 2,
     "Progressive Camp Tier Unlock": 3,
+    "Spectral Rib": 1,
+    "Spectral Skull": 1,
+    "Spectral Spine": 1,
+    "Spectral Humerus": 1,
+    "Spectral Femur": 1
+}
+
+rods = {
+    "Traveler's Rod": 1,
+    "Collector's Rod": 1,
+    "Shining Collector's Rod": 1,
+    "Glistening Collector's Rod": 1,
+    "Opulent Collector's Rod": 1,
+    "Radiant Collector's Rod": 1,
+    "Alpha Collector's Rod": 1,
+    "Prosperous Rod": 1,
 }
 
 filler_weights = {

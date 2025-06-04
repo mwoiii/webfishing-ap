@@ -30,7 +30,7 @@ public class Mod : IMod {
         modInterface.RegisterScriptMod(new ItemPricePatch());
         modInterface.RegisterScriptMod(new RodLootTablePatch());
         modInterface.RegisterScriptMod(new JournalRequirementPatch());
-        modInterface.RegisterScriptMod(new SpectralTagRequire());
+        // modInterface.RegisterScriptMod(new SpectralTagRequire());
     }
 
     public void Dispose() {

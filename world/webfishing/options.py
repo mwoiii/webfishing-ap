@@ -39,7 +39,7 @@ class GameMode(Choice):
     Classic: The classic WEBFISHING experience. Progression is unchanged;
     all fish have their normal catch rates by default.
 
-    Streamlined: Fish are tied to specific rods (which are free from the
+    Harmonized: Fish are tied to specific rods (which are free from the
     shop), and have equal catch rates in their respective pools. The
     quality of fish is guaranteed depending on which bait you use.
     Based on Eszenn's Archipelago Tweaks mod. See the full loot pool
@@ -48,14 +48,46 @@ class GameMode(Choice):
     """
     display_name = "Game Mode"
     option_classic = 0
-    option_streamlined = 1
-    default = 0
+    option_harmonized = 1
+    default = 1
 
 
 class RareFishChecks(Toggle):
-    """Whether "rare" fish will have associated checks or not."""
+    """
+    Affects Classic mode only. Whether "rare" (tier 3, very low odds) fish will have associated
+    checks or not. Makes up about 21 checks - quite a few.
+
+    Be mindful of reducing the total number of checks by too much.
+    """
     display_name = "Rare Fish Checks"
     default = 1
+
+
+# class GCQEasyCount(Range):
+#     """
+#     A number between 1 and 10 that dictates how many iterations of the 'easy' generic catch
+#     quests will yield checks. 'Easy' quests are: catch lake fish, catch ocean fish.
+#
+#     Be mindful of reducing the total number of checks by too much.
+#     """
+#     display_name = "GCQ Easy Count"
+#     range_start = 1
+#     range_end = 10
+#     default = 3
+#
+#
+# class GCQHardCount(Range):
+#     """
+#     A number between 1 and 10 that dictates how many iterations of the 'hard' generic catch
+#     quest will yield checks. 'Hard' quests are: catch large fish, catch small fish, catch chests,
+#     catch fish in the rain, catch higher tier fish.
+#
+#     Be mindful of reducing the total number of checks by too much.
+#     """
+#     display_name = "GCQ Hard Count"
+#     range_start = 1
+#     range_end = 10
+#     default = 2
 
 
 class FishChanceEqualizer(Range):
@@ -68,55 +100,11 @@ class FishChanceEqualizer(Range):
     range_end = 100
     default = 0
 
-# class ProgressiveCampTier(Toggle):
-#     """Whether camp tiers need to be received or not."""
-#     display_name = "Progressive Camp Tiers"
-#
-#
-# class LockUpgradesBehindCamp(Toggle):
-#     """Whether all the following receivable upgrades need to have their corresponding camp tier unlocked or not."""
-#     display_name = "Lock Receivable Upgrades Behind Camp Tier"
-#
-#
-# class ProgressiveRodUpgrade(DefaultOnToggle):
-#     """Whether rod upgrades need to be received or not."""
-#     display_name = "Progressive Rod Upgrades"
-#
-#
-# class BaitUpgrades(Choice):
-#     """
-#     Progressive: Bait upgrades are received in the standard ascending order.
-#
-#     Individual: Bait upgrades are received separate of each other.
-#
-#     Standard: Bait upgrades are not used in the Archipelago item pool.
-#
-#     """
-#     display_name = "Bait Upgrades"
-#     option_progressive = 0
-#     option_individual = 1
-#     option_standard = 2
-#     default = 1
-#
-#
-# class ProgressiveFishingBuddyUpgrades(DefaultOnToggle):
-#     """Whether the fishing buddy upgrades need to be received or not."""
-#     display_name = "Progressive Fishing Buddy Upgrades"
-#
-#
-# class RequireProgressivePurchase(Toggle):
-#     """Whether receivable progressive upgrades require purchasing after being unlocked or not."""
-#     display_name = "Require Progressive Upgrade Purchase"
 
-
-#  webfishing_option_groups = [
-#     OptionGroup("Total Journal Completion Goal Options", [
-#         TotalCompletion,
-#     ]),
-#     OptionGroup("Rank Goal Options", [
-#         Rank,
-#     ]),
-# ]
+class AutoHint(Toggle):
+    """Whether all shop items are auto-hinted on initial connection"""
+    display_name = "Auto Hint"
+    default = 0
 
 
 @dataclass
@@ -126,11 +114,8 @@ class WebfishingOptions(PerGameCommonOptions):
     rank: Rank
     game_mode: GameMode
     rare_fish_checks: RareFishChecks
+    # gcq_easy_count: GCQEasyCount
+    # gcq_hard_count: GCQHardCount
     fish_chance_equalizer: FishChanceEqualizer
-    # progressive_camp_tier = ProgressiveCampTier
-    # lock_upgrades_behind_camp = LockUpgradesBehindCamp
-    # progressive_rod_upgrade = ProgressiveRodUpgrade
-    # bait_upgrades = BaitUpgrades
-    # progressive_fishing_buddy_upgrades = ProgressiveFishingBuddyUpgrades
-    # require_purchase_progressive = RequireProgressivePurchase
-    death_link: DeathLink
+    auto_hint: AutoHint
+    # death_link: DeathLink

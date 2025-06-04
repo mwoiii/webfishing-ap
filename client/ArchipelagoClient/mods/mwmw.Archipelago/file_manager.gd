@@ -4,6 +4,7 @@ const _GAME_CACHE_LOC = "user://ap_data/gamecache.save"
 const _CONN_CACHE_LOC = "user://ap_data/conncache.save"
 
 var inventory_loc = null
+var locations_loc = null
 var NetworkManager = null
 var _slot_info = null
 
@@ -19,9 +20,13 @@ func create_data_files():
 		file.close()
 		file.open(inventory_loc, File.WRITE)
 		file.close()
+		file.open(locations_loc, File.WRITE)
+		file.close()
 	if not dir.dir_exists("user://ap_data/seeds/"):
 		dir.make_dir("user://ap_data/seeds/")
 		file.open(inventory_loc, File.WRITE)
+		file.close()
+		file.open(locations_loc, File.WRITE)
 		file.close()
 
 
@@ -29,6 +34,17 @@ func get_inventory():
 	# if no inventory to be gotten, set with _validate_received_items
 	var file = File.new()
 	file.open(inventory_loc, File.READ)
+	var save_data = JSON.parse(file.get_line())
+	file.close()
+	if save_data.error == OK:
+		return save_data.result
+	else:
+		return null
+
+
+func get_locations():
+	var file = File.new()
+	file.open(locations_loc, File.READ)
 	var save_data = JSON.parse(file.get_line())
 	file.close()
 	if save_data.error == OK:
@@ -75,6 +91,20 @@ func save_inventory(inventory):
 	file.open(inventory_loc, File.WRITE)
 	file.store_string(to_json(inventory))
 	file.close()
+
+
+func save_locations(locations):
+	var file = File.new()
+	file.open(locations_loc, File.WRITE)
+	file.store_string(to_json(locations))
+	file.close()
+
+
+func reset_locations(slot):
+	var path = "user://ap_data/slot" + str(slot) + ".save"
+	var dir = Directory.new()
+	if dir.file_exists(path):
+		dir.remove(path)
 
 
 func get_connection_cache():

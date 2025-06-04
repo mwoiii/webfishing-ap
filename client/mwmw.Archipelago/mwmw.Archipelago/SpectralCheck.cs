@@ -21,8 +21,8 @@ public class SpectralCheck : IScriptMod {
         foreach (var token in tokens) {
             if (ownedWaiter.Check(token)) {
                 // var ap = get_node("/root/mwmwArchipelago")
+                // ap.send_item_check(item_id)
                 // if ap.Config.current_goal != null:
-                //   ap.send_item_check(item_id)
                 //   PlayerData._send_notification("Sent a check!", 0)
                 //   return
                 yield return token;
@@ -37,6 +37,14 @@ public class SpectralCheck : IScriptMod {
                 yield return new Token(TokenType.ParenthesisClose);
 
                 yield return new Token(TokenType.Newline, 1);
+                yield return new IdentifierToken("ap");
+                yield return new Token(TokenType.Period);
+                yield return new IdentifierToken("send_item_check");
+                yield return new Token(TokenType.ParenthesisOpen);
+                yield return new IdentifierToken("item_id");
+                yield return new Token(TokenType.ParenthesisClose);
+
+                yield return new Token(TokenType.Newline, 1);
                 yield return new Token(TokenType.CfIf);
                 yield return new IdentifierToken("ap");
                 yield return new Token(TokenType.Period);
@@ -46,14 +54,6 @@ public class SpectralCheck : IScriptMod {
                 yield return new Token(TokenType.OpNotEqual);
                 yield return new ConstantToken(new NilVariant());
                 yield return new Token(TokenType.Colon);
-
-                yield return new Token(TokenType.Newline, 2);
-                yield return new IdentifierToken("ap");
-                yield return new Token(TokenType.Period);
-                yield return new IdentifierToken("send_item_check");
-                yield return new Token(TokenType.ParenthesisOpen);
-                yield return new IdentifierToken("item_id");
-                yield return new Token(TokenType.ParenthesisClose);
 
                 yield return new Token(TokenType.Newline, 2);
                 yield return new IdentifierToken("PlayerData");

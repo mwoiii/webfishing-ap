@@ -12,59 +12,44 @@ class WebfishingAdvancement(Location):
 
 def populate_advancement_tables():
     counter = 0
-    gcq_count = 5
 
-    # --- QUESTS --- #
-
-    gcq_base = [
-        "Catch Lake Fish", "Catch Ocean Fish", "Catch Tiny/Microscopic Fish", "Catch Massive/Gigantic/Colossal Fish",
-        "Catch Treasure Chests", "Catch Fish in the Rain"
-    ]
-
-    gcq_hard = [
-        "Catch High Tier Fish"
-    ]
-
-    scq_normal = [
-        "Sturgeon", "Catfish", "Koi", "Frog", "Turtle", "Toad", "Leech", "Eel", "Swordfish",
-        "Hammerhead Shark", "Octopus", "Seahorse",  "CREATURE"
-    ]
-
-    scq_hard = [
-        "Golden Ray", "Unidentified Fish Object", "Helicoprion", "Leedsichthys", "Golden Bass", "Bull Shark",
-        "Manta Ray", "Gar", "Sawfish", "Muskellunge", "Axolotl", "Pupfish", "Mooneye", "Great White Shark", "Whale",
-        "Coelacanth", "Alligator", "King Salmon", "Man O' War", "Sea Turtle", "Squid"
-    ]
-
-    # -- MISC-- #
-
-    base_misc = [
-        "Spectral Rib", "Spectral Skull", "Spectral Spine", "Spectral Humerus", "Spectral Femur"
-    ]
-
-    # -- QUESTS -- #
-
-    # gcq_count lots of generic catch quests
-    for i, c in enumerate(gcq_base):
-        for x in range(gcq_count):
-            base[f"{c} Quest ({x + 1}/{gcq_count})"] = AdvData(quest_offset + counter)
+    # 3 lots of easy generic catch quests
+    no = 3
+    for i, c in enumerate(gcq_easy):
+        for x in range(no):
+            base[f"{c} Quest ({x + 1}/{no})"] = AdvData(quest_offset + counter)
             counter += 1
 
-    # gcq_count lots of generic catch quests
+    # 2 lots of normal generic catch quests
+    no = 2
+    for i, c in enumerate(gcq_normal):
+        for x in range(no):
+            base[f"{c} Quest ({x + 1}/{no})"] = AdvData(quest_offset + counter)
+            counter += 1
+
+    # 2 lots of hard generic catch quests
+    no = 2
     for i, c in enumerate(gcq_hard):
-        for x in range(gcq_count):
-            hard[f"{c} Quest ({x + 1}/{gcq_count})"] = AdvData(quest_offset + counter)
+        for x in range(no):
+            hard[f"{c} Quest ({x + 1}/{no})"] = AdvData(quest_offset + counter)
             counter += 1
 
     # 2 lots of (all) normal specific catch quests (>1% chance according to wiki, no extra bait req.)
-    for i, c in enumerate(scq_normal):
-        for x in range(2):
-            base[f"{c} Quest ({x + 1}/2)"] = AdvData(quest_offset + counter)
+    no = 2
+    for i, name in enumerate(scq_normal):
+        for x in range(no):
+            title = f"{name} Quest ({x + 1}/{no})"
+            item = AdvData(quest_offset + counter)
+            scqe[title] = item
+            assign_rod(name, title, item)
             counter += 1
 
     # 1 of hard specific catch quests (so only need to catch 1, no second check for 5)
-    for c in scq_hard:
-        hard_specific[f"{c} Quest (1/1)"] = AdvData(quest_offset + counter)
+    for name in scq_hard:
+        title = f"{name} Quest (1/1)"
+        item = AdvData(quest_offset + counter)
+        hard_specific[name] = item
+        assign_rod(name, title, item)
         counter += 1
 
     # --- MISC --- #
@@ -82,45 +67,106 @@ def populate_advancement_tables():
     # another reset
     counter = 0
 
-    # cheap shop checks
-    for i in range(16):
-        check = f"Cheap Shop Purchase ({i+1})"
-        base[check] = AdvData(shop_offset + counter)
-        counter += 1
-
-    # costly shop checks
-    for i in range(8):
-        check = f"Moderate Shop Purchase ({i+1})"
-        medium[check] = AdvData(shop_offset + counter)
-        counter += 1
-
-    # expensive shop checks
-    for i in range(8):
-        check = f"Expensive Shop Purchase ({i+1})"
-        hard[check] = AdvData(shop_offset + counter)
-        counter += 1
-
     # progression shop checks
-    base["Progression Shop Purchase (1)"] = AdvData(shop_offset + counter)
-    counter += 1
 
-    camp_2["Progression Shop Purchase (2)"] = AdvData(shop_offset + counter)
-    counter += 1
+    # t1 checks
+    for i in range(8):
+        base[f"T1 Progression Shop Purchase ({i+1})"] = AdvData(shop_offset + counter)
+        counter += 1
 
-    camp_3["Progression Shop Purchase (3)"] = AdvData(shop_offset + counter)
-    counter += 1
+    # t2 checks
+    for i in range(8):
+        camp_2[f"T2 Progression Shop Purchase ({i+1})"] = AdvData(shop_offset + counter)
+        counter += 1
 
-    camp_4["Progression Shop Purchase (4)"] = AdvData(shop_offset + counter)
-    counter += 1
+    # t3 checks
+    for i in range(8):
+        camp_3[f"T3 Progression Shop Purchase ({i+1})"] = AdvData(shop_offset + counter)
+        counter += 1
+
+    # t4 checks
+    for i in range(8):
+        camp_4[f"T4 Progression Shop Purchase ({i+1})"] = AdvData(shop_offset + counter)
+        counter += 1
+
+    # spectral shop checks
+    for i in range(4):
+        spectral_shop[f"Spectral Shop Purchase ({i+1})"] = AdvData(shop_offset + counter)
+        counter += 1
 
 
-base = {}
-medium = {}
-hard = {}
-hard_specific = {}
-camp_2 = {}
-camp_3 = {}
-camp_4 = {}
+def assign_rod(name, title, item):
+    for category, catches in rod_categories.items():
+        if name in catches:
+            category_mapping[category][title] = item
+            break
+
+
+# --- QUESTS --- #
+gcq_easy = [
+    "Catch Lake Fish", "Catch Ocean Fish"
+]
+gcq_normal = [
+    "Catch Tiny/Microscopic Fish", "Catch Massive/Gigantic/Colossal Fish", "Catch Treasure Chests",
+    "Catch Fish in the Rain"
+]
+gcq_hard = [
+    "Catch High Tier Fish"
+]
+scq_normal = [
+    "Sturgeon", "Catfish", "Koi", "Frog", "Turtle", "Toad", "Leech", "Eel", "Swordfish",
+    "Hammerhead Shark", "Octopus", "Seahorse", "CREATURE"
+]
+scq_hard = [
+    "Golden Ray", "Unidentified Fish Object", "Helicoprion", "Leedsichthys", "Golden Bass", "Bull Shark",
+    "Manta Ray", "Gar", "Sawfish", "Muskellunge", "Axolotl", "Pupfish", "Mooneye", "Great White Shark", "Whale",
+    "Coelacanth", "Alligator", "King Salmon", "Man O' War", "Sea Turtle", "Squid"
+]
+base_misc = [
+    "Spectral Rib", "Spectral Skull", "Spectral Spine", "Spectral Humerus", "Spectral Femur"
+]
+
+# -- ROD CATEGORIES -- #
+rod_categories = {
+    "collector": ["Frog", "Seahorse", "Swordfish"],
+    "shining": ["Catfish", "Koi", "Sturgeon", "Eel", "Octopus"],
+    "glistening": ["Leech", "Turtle", "Toad", "Hammerhead Shark", "Sawfish"],
+    "opulent": ["Gar", "King Salmon", "Muskellunge", "Man O' War", "Manta Ray", "Sea Turtle", "Squid"],
+    "radiant": ["Axolotl", "Pupfish", "Mooneye", "Great White Shark"],
+    "alpha": ["Whale", "Coelacanth", "Alligator", "Bull Shark"],
+    "prosperous": ["Leedsichthys", "Golden Bass", "Golden Ray"],
+    "spectral": ["Unidentified Fish Object", "Helicoprion", "CREATURE"]
+}
+
+# quests requiring respective rods
+collector = {}
+shining = {}
+glistening = {}
+opulent = {}
+radiant = {}
+alpha = {}
+prosperous = {}
+spectral = {}
+
+category_mapping = {
+    "collector": collector,
+    "shining": shining,
+    "glistening": glistening,
+    "opulent": opulent,
+    "radiant": radiant,
+    "alpha": alpha,
+    "prosperous": prosperous,
+    "spectral": spectral
+}
+
+base = {}  # always sphere 1
+scqe = {}  # specific catch quest easy - position depends on game mode
+hard = {}  # soft requirement for lots of resources
+hard_specific = {}  # same as hard, but toggleable
+camp_2 = {}  # require 1 camp upgrade
+camp_3 = {}  # require 2 camp upgrades
+camp_4 = {}  # require all camp upgrades
+spectral_shop = {}   # require at least one spectral bone
 
 quest_offset: int = 94200
 item_offset: int = 94700
@@ -128,7 +174,4 @@ shop_offset: int = 95200
 
 populate_advancement_tables()
 
-all_advancements = base | medium | hard | hard_specific | camp_2 | camp_3 | camp_4
-
-
-
+all_advancements = base | scqe | hard | hard_specific | camp_2 | camp_3 | camp_4 | spectral_shop

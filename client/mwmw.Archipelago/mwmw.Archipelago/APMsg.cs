@@ -21,13 +21,19 @@ namespace mwmw.Archipelago {
                 t => t.Type is TokenType.ParenthesisClose
         ], allowPartialMatch: false);
 
+            var wagWaiter = new MultiTokenWaiter([
+                t => t.Type is TokenType.ParenthesisOpen,
+                t => t is ConstantToken {Value: StringVariant{Value: "_wag_toggle"}},
+                t => t.Type is TokenType.ParenthesisClose,
+        ], allowPartialMatch: false);
+
             foreach (var token in tokens) {
                 if (messageWaiter.Check(token)) {
                     // if chat_local:
                     //   var p = ""
                     //   if breakdown[0].begins_with("/"):
                     //     p = breakdown[0] + " "
-                    //   get_node("res://mods/mwmw.archipelago").say(p + final_text)
+                    //   get_node("/root/mwmwArchipelago").say(p + final_text)
                     yield return token;
 
                     yield return new Token(TokenType.Newline, 1);
@@ -76,6 +82,42 @@ namespace mwmw.Archipelago {
                     yield return new Token(TokenType.OpAdd);
                     yield return new IdentifierToken("final_text");
                     yield return new Token(TokenType.ParenthesisClose);
+
+                } else if (wagWaiter.Check(token)) {
+                    // "/help", "/completion", "/goal", "/mode":
+                    //   if chat_local:
+                    //     get_node("/root/mwmwArchipelago").command(line)
+                    //     return
+                    yield return token;
+
+                    yield return new Token(TokenType.Newline, 4);
+                    yield return new ConstantToken(new StringVariant("/help"));
+                    yield return new Token(TokenType.Comma);
+                    yield return new ConstantToken(new StringVariant("/completion"));
+                    yield return new Token(TokenType.Comma);
+                    yield return new ConstantToken(new StringVariant("/goal"));
+                    yield return new Token(TokenType.Comma);
+                    yield return new ConstantToken(new StringVariant("/mode"));
+                    yield return new Token(TokenType.Colon);
+
+                    yield return new Token(TokenType.Newline, 5);
+                    yield return new Token(TokenType.CfIf);
+                    yield return new IdentifierToken("chat_local");
+                    yield return new Token(TokenType.Colon);
+
+                    yield return new Token(TokenType.Newline, 6);
+                    yield return new IdentifierToken("get_node");
+                    yield return new Token(TokenType.ParenthesisOpen);
+                    yield return new ConstantToken(new StringVariant("/root/mwmwArchipelago"));
+                    yield return new Token(TokenType.ParenthesisClose);
+                    yield return new Token(TokenType.Period);
+                    yield return new IdentifierToken("command");
+                    yield return new Token(TokenType.ParenthesisOpen);
+                    yield return new IdentifierToken("line");
+                    yield return new Token(TokenType.ParenthesisClose);
+
+                    yield return new Token(TokenType.Newline, 6);
+                    yield return new Token(TokenType.CfReturn);
 
                 } else {
                     yield return token;
