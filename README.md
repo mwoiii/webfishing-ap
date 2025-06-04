@@ -9,7 +9,7 @@ In the current version, you can get checks from purchases and quests, and the re
 - Progressive camp tier unlocks
 - Lures
 - Consumables (Drinks, scratch-offs, treasure chests)
-- Money
+- Money0
 - Spectral bones
 
 "Victory" can be set to either reaching a specified target rank, reaching a certain percentage journal completion, or by unlocking and purchasing the final camp tier.
@@ -21,11 +21,7 @@ And a big thanks to [Eszenn](https://github.com/Eszenn) for letting me integrate
 ## Connecting
 With the mod installed, you can connect to an Archipelago server through the Archipelago button on the esc. menu once you load into a game. The button will open up a connection panel when pressed, which will let you enter all the relevant info.
 
-When using the mod, you should:
-- **Ensure you complete checks while connected to the server**
-- **Stick to one (new) save per Archipelago world**
-
-If you receive items on the incorrect save, or you try to send a check while offline, you can resolve the issue by quitting without saving - but checks sent from an incorrect save cannot be undone!
+When using the mod, you should **stick to one (new) save per Archipelago world.** If you receive items on the incorrect save, you can resolve the issue by quitting without saving - but checks sent from an incorrect save cannot be undone!
 
 The client will try to send a notification if you lose connection - however you can make certain of a connection by entering a message in local chat.
 
@@ -36,3 +32,12 @@ For the client, you can either:
 - Install [r2modman](https://thunderstore.io/package/ebkr/r2modman/), and download the [Archipelago client](https://thunderstore.io/c/webfishing/p/mwmw/Archipelago/) from Thunderstore through it. This will automatically install all dependencies. (Recommended)
 
 - Install [GDWeave](https://github.com/NotNite/GDWeave) manually, then download ```mwmw.Archipelago.zip``` from the [releases](https://github.com/mwoiii/webfishing-ap/releases) page and extract the folder into the GDWeave mods folder
+
+## Logic
+The logic for each of the gamemodes, 'Classic' and 'Harmonized', is outlined below. Due to the nature of the game, it is possible to skip ahead of the upgrade requirements - they are only there to ensure enough upgrades are in logic.
+
+### Classic
+<img src="media/logic_classic.png" alt="Classic mode logic diagram" width="600">
+
+### Harmonized
+<img src="media/logic_harmonized.png" alt="Harmonized mode logic diagram" width="1100">
