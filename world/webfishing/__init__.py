@@ -292,7 +292,10 @@ class WebfishingWorld(World):
                 self.multiworld.itempool.append(item)
 
         # filling in remaining slots with junk
-        filler_quantity = len(all_advancements) - sum(fixed_quantities.values()) - sum(rods.values())
+        filler_quantity = len(all_advancements) - sum(fixed_quantities.values())
+        if self.options.game_mode.value == 1:
+            filler_quantity -= sum(rods.values())
+
         for _ in range(filler_quantity):
             name = self.random.choices(list(filler_weights.keys()), weights=list(filler_weights.values()))[0]
             item = self.create_item(name)
