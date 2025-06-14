@@ -15,16 +15,22 @@ def populate_advancement_tables():
 
     # 3 lots of easy generic catch quests
     no = 3
-    for i, c in enumerate(gcq_easy):
+    for i, name in enumerate(gcq_easy):
         for x in range(no):
-            base[f"{c} Quest ({x + 1}/{no})"] = AdvData(quest_offset + counter)
+            title = f"{name} Quest ({x + 1}/{no})"
+            item = AdvData(quest_offset + counter)
+            standard_base[title] = item
+            assign_rod(name, title, item)
             counter += 1
 
     # 2 lots of normal generic catch quests
     no = 2
-    for i, c in enumerate(gcq_normal):
+    for i, name in enumerate(gcq_normal):
         for x in range(no):
-            base[f"{c} Quest ({x + 1}/{no})"] = AdvData(quest_offset + counter)
+            title = f"{name} Quest ({x + 1}/{no})"
+            item = AdvData(quest_offset + counter)
+            standard_base[title] = item
+            assign_rod(name, title, item)
             counter += 1
 
     # 2 lots of hard generic catch quests
@@ -59,7 +65,7 @@ def populate_advancement_tables():
 
     # one of each in misc
     for c in base_misc:
-        base[c] = AdvData(item_offset + counter)
+        standard_base[c] = AdvData(item_offset + counter)
         counter += 1
 
     # --- SHOPS --- #
@@ -71,7 +77,7 @@ def populate_advancement_tables():
 
     # t1 checks
     for i in range(8):
-        base[f"T1 Progression Shop Purchase ({i+1})"] = AdvData(shop_offset + counter)
+        standard_base[f"T1 Progression Shop Purchase ({i+1})"] = AdvData(shop_offset + counter)
         counter += 1
 
     # t2 checks
@@ -94,6 +100,10 @@ def populate_advancement_tables():
         spectral_shop[f"Spectral Shop Purchase ({i+1})"] = AdvData(shop_offset + counter)
         counter += 1
 
+    # configuring harmonised base for gcq
+    for key in standard_base:
+        if key not in traveler:
+            harmonised_base[key] = standard_base[key]
 
 def assign_rod(name, title, item):
     for category, catches in rod_categories.items():
@@ -128,6 +138,8 @@ base_misc = [
 
 # -- ROD CATEGORIES -- #
 rod_categories = {
+    "traveler": ["Catch Lake Fish", "Catch Ocean Fish", "Catch Tiny/Microscopic Fish",
+                 "Catch Massive/Gigantic/Colossal Fish", "Catch Fish in the Rain"],
     "collector": ["Frog", "Seahorse", "Swordfish"],
     "shining": ["Catfish", "Koi", "Sturgeon", "Eel", "Octopus"],
     "glistening": ["Leech", "Turtle", "Toad", "Hammerhead Shark", "Sawfish"],
@@ -139,6 +151,7 @@ rod_categories = {
 }
 
 # quests requiring respective rods
+traveler = {}
 collector = {}
 shining = {}
 glistening = {}
@@ -149,6 +162,7 @@ prosperous = {}
 spectral = {}
 
 category_mapping = {
+    "traveler": traveler,
     "collector": collector,
     "shining": shining,
     "glistening": glistening,
@@ -159,7 +173,10 @@ category_mapping = {
     "spectral": spectral
 }
 
-base = {}  # always sphere 1
+# sphere 1
+standard_base = {}
+harmonised_base = {}
+
 scqe = {}  # specific catch quest easy - position depends on game mode
 hard = {}  # soft requirement for lots of resources
 hard_specific = {}  # same as hard, but toggleable
@@ -174,4 +191,4 @@ shop_offset: int = 95200
 
 populate_advancement_tables()
 
-all_advancements = base | scqe | hard | hard_specific | camp_2 | camp_3 | camp_4 | spectral_shop
+all_advancements = standard_base | scqe | hard | hard_specific | camp_2 | camp_3 | camp_4 | spectral_shop

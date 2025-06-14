@@ -2,9 +2,9 @@ import settings
 from typing import Dict, Any
 from .options import WebfishingOptions
 from .items import (WebfishingItem, WebfishingItemData, item_table, fixed_quantities, rods, filler_weights)
-from .locations import (WebfishingAdvancement, base, scqe, hard, hard_specific, camp_2, camp_3, camp_4,
-                        all_advancements, collector, shining, glistening, opulent, radiant, alpha, prosperous, spectral,
-                        spectral_shop)
+from .locations import (WebfishingAdvancement, standard_base, harmonised_base, scqe, hard, hard_specific, camp_2,
+                        camp_3, camp_4, all_advancements, traveler, collector, shining, glistening, opulent, radiant,
+                        alpha, prosperous, spectral, spectral_shop)
 from worlds.AutoWorld import World
 from worlds.generic.Rules import set_rule
 from BaseClasses import Region, Item
@@ -37,7 +37,7 @@ class WebfishingWorld(World):
                 # Base (no items needed)
                 base_region = Region("Base", self.player, self.multiworld)
                 base_region.locations += [WebfishingAdvancement(self.player, loc_name, loc_data.id, base_region)
-                                          for loc_name, loc_data in (base | scqe).items()]
+                                          for loc_name, loc_data in (standard_base | scqe).items()]
 
                 # Medium (some progression items needed for time)
                 medium_region = Region("Medium", self.player, self.multiworld)
@@ -95,10 +95,16 @@ class WebfishingWorld(World):
                 # Base (no items needed)
                 base_region = Region("Base", self.player, self.multiworld)
                 base_region.locations += [WebfishingAdvancement(self.player, loc_name, loc_data.id, base_region)
-                                          for loc_name, loc_data in base.items()]
+                                          for loc_name, loc_data in harmonised_base.items()]
 
                 # Medium (some progression items needed for time)
                 medium_region = Region("Medium", self.player, self.multiworld)
+
+                # Collector (fish found with the standard collector rod)
+                traveler_region = Region("Traveler", self.player, self.multiworld)
+                traveler_region.locations += [WebfishingAdvancement(self.player, loc_name, loc_data.id,
+                                                                    traveler_region) for loc_name, loc_data in
+                                              traveler.items()]
 
                 # Hard (lots of progression items needed for time)
                 hard_region = Region("Hard", self.player, self.multiworld)
@@ -174,14 +180,14 @@ class WebfishingWorld(World):
                                                                          spectral_shop_region)
                                                    for loc_name, loc_data in spectral_shop.items()]
 
-                self.multiworld.regions += [menu_region, base_region, medium_region, hard_region, collector_region,
-                                            shining_region, glistening_region, opulent_region, radiant_region,
-                                            alpha_region, prosperous_region, spectral_region, camp_2_region,
-                                            camp_3_region, camp_4_region, spectral_shop_region]
+                self.multiworld.regions += [menu_region, base_region, traveler_region, medium_region, hard_region,
+                                            collector_region, shining_region, glistening_region, opulent_region,
+                                            radiant_region, alpha_region, prosperous_region, spectral_region,
+                                            camp_2_region, camp_3_region, camp_4_region, spectral_shop_region]
 
                 menu_region.connect(base_region)
                 base_region.add_exits({"Medium": "Some Upgrades", "Camp 2": "Progressive Camp 1",
-                                       "Spectral Shop": "Spectral Bone"})
+                                       "Spectral Shop": "Spectral Bone", "Traveler": "Traveler's Rod"})
                 medium_region.add_exits({"Hard": "Upgrade Abundance", "Camp 3": "Progressive Camp 2",
                                          "Collector": "Collector Rod", "Shining": "Shining Rod",
                                          "Glistening": "Glistening Rod", "Spectral": "Spectral Bones"})
@@ -237,6 +243,9 @@ class WebfishingWorld(World):
 
         # Harmonized mode only
         if self.options.game_mode.value == 1:
+            set_rule(self.multiworld.get_entrance("Traveler's Rod", self.player),
+                     lambda state: state.has("Traveler's Rod", self.player))
+
             set_rule(self.multiworld.get_entrance("Collector Rod", self.player),
                      lambda state: state.has("Collector's Rod", self.player))
 
