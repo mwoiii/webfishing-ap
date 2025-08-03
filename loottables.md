@@ -2,7 +2,7 @@
 Bone, Boot, Branch, Drink Rings, Plastic Bag, Soda Can, Seaweed
 
 ### Traveler's Rod
-Salmon, Bass, Carp, Rainbow Trout, Bluegill, Perch, Walleye, Goldfish, Atlantic Salmon, Herring, Flounder, Clownfish, Shrimp, Angelfish, Grouper
+Salmon, Largemouth Bass, Carp, Rainbow Trout, Bluegill, Perch, Walleye, Goldfish, Atlantic Salmon, Herring, Flounder, Clownfish, Shrimp, Angelfish, Grouper
 
 ### Collector's Rod
 Crayfish, Drum, Guppy, Snail, Frog, Crab, Krill, Oyster, Bluefish, Lobster, Tuna, Seahorse, Sunfish, Swordfish
