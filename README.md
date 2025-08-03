@@ -36,6 +36,9 @@ For the client, you can either:
 ## Logic
 The logic for each of the gamemodes, 'Classic' and 'Harmonized', is outlined below. Due to the nature of the game, it is possible to skip ahead of the upgrade requirements - they are only there to ensure enough upgrades are in logic.
 
+[Harmonized Rod Loot Tables](./loottables.md)
+
+
 ### Classic
 <img src="media/logic_classic.png" alt="Classic mode logic diagram" width="600">
 
