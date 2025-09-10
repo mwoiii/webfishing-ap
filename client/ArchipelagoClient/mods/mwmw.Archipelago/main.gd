@@ -287,7 +287,105 @@ func get_shop_hint(item_id):
 		"player": NetworkManager.players[net_item.player - 1].name
 	}
 
+func get_harmonized_rod_desc(item_id):
+	match item_id:
+		"fishing_rod_simple":
+			return "Catches:\n[color=#cfffd2]Bone, Boot, Branch, Drink Rings, Plastic Bag, Soda Can, Seaweed[/color]"
+		"fishing_rod_travelers":
+			return "Catches:\n[color=#cfffd2]Salmon, Largemouth Bass, Carp, Rainbow Trout, Bluegill, Perch, Walleye, Goldfish, Atlantic Salmon, Herring, Flounder, Clownfish, Shrimp, Angelfish, Grouper[/color]"
+		"fishing_rod_collectors":
+			return "Catches:\n[color=#cfffd2]Crayfish, Drum, Guppy, Snail, Frog, Crab, Krill, Oyster, Bluefish, Lobster, Tuna, Seahorse, Sunfish, Swordfish[/color]"
+		"fishing_rod_collectors_shining":
+			return "Catches:\n[color=#cfffd2]Catfish, Crappie, Pike, Bowfin, Koi, Sturgeon, Marlin, Octopus, Stingray, Eel, Dogfish, Lionfish[/color]"
+		"fishing_rod_collectors_radiant":
+			return "Catches:\n[color=#cfffd2]Pupfish, Axolotl, Mooneye, Great White Shark[/color]"
+		"fishing_rod_collectors_opulent":
+			return "Catches:\n[color=#cfffd2]Muskellunge, King Salmon, Gar, Sea Turtle, Squid, Man O' War, Manta Ray[/color]"
+		"fishing_rod_collectors_glistening":
+			return "Catches:\n[color=#cfffd2]Leech, Turtle, Toad, Sawfish, Wolffish, Hammerhead Shark[/color]"
+		"fishing_rod_collectors_alpha":
+			return "Catches:\n[color=#cfffd2]Alligator, Bullshark, Whale, Coelacanth[/color]"
+		"fishing_rod_skeleton":
+			return "Catches:\n[color=#cfffd2]Anomalocaris, Horseshoe Crab, Heliocoprion, UFO, Voidfish[/color] (under their respective conditions)"
+		"fishing_rod_prosperous":
+			return "Catches:\n[color=#cfffd2]Golden Bass, Diamond, Golden Manta Ray, Leedsichthys[/color]"
 
+
+func _set_bait_desc_harmonized(harmonized):
+	
+	if harmonized:
+		PlayerData.BAIT_DATA["worms"]["desc"] = "Low Quality Cheap Bait\nCatches all Tiers of fish\nCatches Low Tier fish only"
+		PlayerData.BAIT_DATA["cricket"]["desc"] = "Standard Quality Cheap Bait\nCatches all Tiers of fish\nCatches SHINING fish only"
+		PlayerData.BAIT_DATA["leech"]["desc"] = "Above Standard Quality Bait\nCatches all Tiers of fish\nCatches GLISTENING fish only"
+		PlayerData.BAIT_DATA["minnow"]["desc"] = "High Quality Bait\nCatches all Tiers of fish\nCatches OPULENT fish only"
+		PlayerData.BAIT_DATA["squid"]["desc"] = "Very High Quality Bait\nCatches all Tiers of fish\nCatches RADIANT fish only"
+		PlayerData.BAIT_DATA["nautilus"]["desc"] = "Pristine Quality Bait\nCatches all Tiers of fish\nCatches ALPHA fish only"
+		PlayerData.BAIT_DATA["gildedworm"]["desc"] = "Pristine Quality Bait\nCatches all Tiers of fish\nVanilla odds - high chance of finding ALPHA fish"
+	else:
+		PlayerData.BAIT_DATA["worms"]["desc"] = "Low Quality Cheap Bait\nCatches Low Tier fish only"
+		PlayerData.BAIT_DATA["cricket"]["desc"] = "Standard Quality Cheap Bait\nCatches all Tiers of fish\nLow chance of finding SHINING fish"
+		PlayerData.BAIT_DATA["leech"]["desc"] = "Above Standard Quality Bait\nCatches all Tiers of fish\nLow chance of finding GLISTENING fish"
+		PlayerData.BAIT_DATA["minnow"]["desc"] = "High Quality Bait\nCatches all Tiers of fish\nLow chance of finding OPULENT fish"
+		PlayerData.BAIT_DATA["squid"]["desc"] = "Very High Quality Bait\nCatches all Tiers of fish\nLow chance of finding RADIANT fish"
+		PlayerData.BAIT_DATA["nautilus"]["desc"] = "Pristine Quality Bait\nCatches all Tiers of fish\nLow chance of finding ALPHA fish"
+		PlayerData.BAIT_DATA["gildedworm"]["desc"] = "Pristine Quality Bait\nCatches all Tiers of fish\nBest chance of finding ALPHA fish"
+
+# adding to the enum only as is necessary
+enum Items {
+	SPECTRAL_RIB = 94044,
+	SPECTRAL_SKULL = 94045,
+	SPECTRAL_SPINE = 94046,
+	SPECTRAL_HUMERUS = 94047,
+	SPECTRAL_FEMUR = 94048,
+}
+
+func reobtain_spectral_bones():
+	# initiate vars
+	var give_rib = false
+	var give_skull = false
+	var give_spine = false
+	var give_humerus = false
+	var give_femur = false
+	
+	# possibility of granting if in ap inventory
+	for item in NetworkManager.inventory["items"]:
+		match int(item["item"]):
+			Items.SPECTRAL_RIB:
+				give_rib = true
+			Items.SPECTRAL_SKULL:
+				give_skull = true
+			Items.SPECTRAL_SPINE:
+				give_spine = true
+			Items.SPECTRAL_HUMERUS:
+				give_humerus = true
+			Items.SPECTRAL_FEMUR:
+				give_femur = true
+	
+	# certainty of not granting if already in possession
+	for item in PlayerData.inventory:
+		match item["id"]:
+			"spectral_rib":
+				give_rib = false
+			"spectral_skull":
+				give_skull = false
+			"spectral_spine":
+				give_spine = false
+			"spectral_humerus":
+				give_humerus = false
+			"spectral_femur":
+				give_femur = false
+		
+	if give_rib:
+		PlayerData._add_item("spectral_rib", - 1, 10)
+	if give_skull:
+		PlayerData._add_item("spectral_skull", - 1, 10)
+	if give_spine:
+		PlayerData._add_item("spectral_spine", - 1, 10)
+	if give_humerus:
+		PlayerData._add_item("spectral_humerus", - 1, 10)
+	if give_femur:
+		PlayerData._add_item("spectral_femur", - 1, 10)
+		
 func out(text):
 	print("APMain: " + str(text))
 
@@ -530,6 +628,7 @@ func _on_connected(slot_data):
 	if Config.mode == Config.Gamemode.ALT:
 		_generate_alt_loot_tables()
 		_set_alt_bait_weights()
+		_set_bait_desc_harmonized(true)
 	
 	if Config.chance_eq > 0:
 		_adjust_fish_weights()
@@ -806,6 +905,7 @@ func _on_received_item(item):
 			PlayerData.saved_tags.append("spectral")
 			PlayerData._send_notification("you feel an otherworldly force beckon you...")
 			Network._update_chat("[color=#008583]" + "you feel an otherwordly force beckon you..." + "[/color]")
+		
 	elif lure_id:
 		name = PlayerData.LURE_DATA[lure_id].name.to_upper()
 		PlayerData.lure_unlocked.append(lure_id)
@@ -816,6 +916,7 @@ func _on_received_item(item):
 
 func _on_connection_lost():
 	PlayerData._send_notification("Disconnected from Archipelago!")
+	_set_bait_desc_harmonized(false)
 	Config.mode = null
 
 
