@@ -54,7 +54,7 @@ def populate_advancement_tables():
     for name in scq_hard:
         title = f"{name} Quest (1/1)"
         item = AdvData(quest_offset + counter)
-        hard_specific[name] = item
+        hard_specific[title] = item
         assign_rod(name, title, item)
         counter += 1
 
