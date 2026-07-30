@@ -1,15 +1,15 @@
 # WEBFISHING Archipelago
 > [!CAUTION]  
-> This mod is in an alpha state - there may still be bugs and frustrating item logic! Please play at your own risk!
+> This mod is no longer being maintained - there may be bugs and frustrating item logic! Please play at your own risk!
 ## About
-This is a mod for the game [WEBFISHING](https://store.steampowered.com/app/3146520/WEBFISHING/) that adds [Archipelago](https://archipelago.gg/) integration! The mod isn't feature-complete yet, but is hopefully in a working and mostly bug-free state!
+This is a mod for the game [WEBFISHING](https://store.steampowered.com/app/3146520/WEBFISHING/) that adds [Archipelago](https://archipelago.gg/) integration!
 
-In the current version, you can get checks from purchases and quests, and the receivable items consist of:
+You can get checks from purchases and quests, and the receivable items consist of:
 - Progressive rod/bait upgrades
 - Progressive camp tier unlocks
 - Lures
 - Consumables (Drinks, scratch-offs, treasure chests)
-- Money0
+- Money
 - Spectral bones
 
 "Victory" can be set to either reaching a specified target rank, reaching a certain percentage journal completion, or by unlocking and purchasing the final camp tier.
@@ -29,7 +29,7 @@ The client will try to send a notification if you lose connection - however you 
 For world generation, go to the [releases](https://github.com/mwoiii/webfishing-ap/releases) page, download the ```apworld``` and ```YAML``` files, and place them in your ```custom_worlds``` and ```Players``` respectively (in your Archipelago installation folder!). From here, you can configure the YAML to your liking!
 
 For the client, you can either:
-- Install [r2modman](https://thunderstore.io/package/ebkr/r2modman/), and download the [Archipelago client](https://thunderstore.io/c/webfishing/p/mwmw/Archipelago/) from Thunderstore through it. This will automatically install all dependencies. (Recommended)
+- Install [r2modman](https://thunderstore.io/package/ebkr/r2modman/) (or another Thunderstore mod manager), and download the [Archipelago client](https://thunderstore.io/c/webfishing/p/mwmw/Archipelago/) from Thunderstore through it. This will automatically install all dependencies. (Recommended)
 
 - Install [GDWeave](https://github.com/NotNite/GDWeave) manually, then download ```mwmw.Archipelago.zip``` from the [releases](https://github.com/mwoiii/webfishing-ap/releases) page and extract the folder into the GDWeave mods folder
 
