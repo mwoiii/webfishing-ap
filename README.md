@@ -1,4 +1,7 @@
 # WEBFISHING Archipelago
+> [!IMPORTANT]
+> **Humbly requesting that any potential future maintainers don't try and vibecode the project.** I can't stop you, but it brings me sadness to see my old works thrown effortlessly into the slop machine :(. I heavily encourage you to instead spend that time manually problem-solving and learning a new skill - it can be a lot of fun once you get into it!
+
 > [!CAUTION]  
 > This mod is no longer being maintained - there may be bugs and frustrating item logic! Please play at your own risk!
 ## About
