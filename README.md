@@ -1,6 +1,6 @@
 # WEBFISHING Archipelago
 > [!IMPORTANT]
-> **Humbly requesting that any potential future maintainers don't try and vibecode the project.** I can't stop you, but it brings me sadness to see my old works thrown effortlessly into the slop machine :(. I heavily encourage you to instead spend that time manually problem-solving and learning a new skill - it can be a lot of fun once you get into it!
+> **To any potential future maintainers: don't try and vibecode the project.** I don't consent to this project, or any of my other projects, to be built upon in this manner. Thanks! 
 
 > [!CAUTION]  
 > This mod is no longer being maintained - there may be bugs and frustrating item logic! Please play at your own risk!
@@ -32,7 +32,7 @@ The client will try to send a notification if you lose connection - however you 
 For world generation, go to the [releases](https://github.com/mwoiii/webfishing-ap/releases) page, download the ```apworld``` and ```YAML``` files, and place them in your ```custom_worlds``` and ```Players``` respectively (in your Archipelago installation folder!). From here, you can configure the YAML to your liking!
 
 For the client, you can either:
-- Install [r2modman](https://thunderstore.io/package/ebkr/r2modman/) (or another Thunderstore mod manager), and download the [Archipelago client](https://thunderstore.io/c/webfishing/p/mwmw/Archipelago/) from Thunderstore through it. This will automatically install all dependencies. (Recommended)
+- Install a Thunderstore mod manager of your choosing, and download the Archipelago client from Thunderstore through it. This will automatically install all dependencies. (Recommended)
 
 - Install [GDWeave](https://github.com/NotNite/GDWeave) manually, then download ```mwmw.Archipelago.zip``` from the [releases](https://github.com/mwoiii/webfishing-ap/releases) page and extract the folder into the GDWeave mods folder
 
